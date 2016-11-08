@@ -8192,14 +8192,19 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var random = Math.random; /**
-	                           * Created by fed on 2016/11/8.
-	                           */
+	var random = Math.random,
+	    sqrt = Math.sqrt; /**
+	                       * Created by fed on 2016/11/8.
+	                       */
 
 	var RANDOM_FACTOR = 5;
 
+	function square(x) {
+	  return x * x;
+	}
+
 	(0, _co2.default)(regeneratorRuntime.mark(function _callee() {
-	  var img, imgWidth, imgHeight, canvasWidth, canvasHeight, startX, startY, imgInfo, newState, i, _loop, j, nextRandomParticle, pSize, particles;
+	  var img, imgWidth, imgHeight, canvasWidth, canvasHeight, startX, startY, imgInfo, newState, i, _loop, j, revCount, pauseCount, initLength, nextRandomParticle, pSize, particles;
 
 	  return regeneratorRuntime.wrap(function _callee$(_context) {
 	    while (1) {
@@ -8207,34 +8212,60 @@
 	        case 0:
 	          nextRandomParticle = function nextRandomParticle() {
 	            var l = newState.length;
+	            if (l <= 0) return null;
 	            var index = parseInt(random() * l, 10);
-	            var _newState$index = newState[index],
-	                x0 = _newState$index.x,
-	                y0 = _newState$index.y,
-	                fillStyle = _newState$index.fillStyle;
+	            var _newState$splice$ = newState.splice(index, 1)[0],
+	                x0 = _newState$splice$.x,
+	                y0 = _newState$splice$.y,
+	                fillStyle = _newState$splice$.fillStyle;
 
-	            var liveTime = parseInt(random() * 500, 10) + 100;
-	            var kx = (random() - 0.5) * 2;
-	            var ky = (random() - 0.5) * 2;
+	            var liveTime = parseInt(random() * 10, 10) + 100;
+	            var kx = (random() - 0.5) * 1;
+	            var ky = (random() - 0.5) * 1;
 	            var pastTime = 0;
-	            return function next() {
-	              if (pastTime > liveTime) return null;
-	              pastTime++;
-	              return {
-	                x: x0 + pastTime * kx,
-	                y: y0 + pastTime * ky,
-	                fillStyle: fillStyle
-	              };
+	            var reversed = false;
+	            return {
+	              next: function next() {
+	                if (pastTime >= liveTime) {
+	                  if (!reversed) return null;else {
+	                    revCount++;
+	                    if (revCount === initLength) {
+	                      for (var _i = 0; _i < particles.length; _i++) {
+	                        particles[_i].reverse();
+	                      }
+	                      revCount = 0;
+	                      pauseCount = 1;
+	                    }
+	                    return;
+	                  }
+	                }
+	                pastTime++;
+	                var factor = 1 - square(0.5 - pastTime / liveTime);
+	                return {
+	                  x: x0 + (pastTime * kx + pastTime * pastTime * kx) * factor,
+	                  y: y0 + (pastTime * ky + pastTime * pastTime * ky) * factor,
+	                  fillStyle: fillStyle
+	                };
+	              },
+	              reverse: function reverse() {
+	                reversed = true;
+	                var factor = 1 - square(0.5 - pastTime / liveTime);
+	                x0 = x0 + (pastTime * kx + pastTime * pastTime * kx) * factor;
+	                y0 = y0 + (pastTime * ky + pastTime * pastTime * ky) * factor;
+	                pastTime = 0;
+	                kx = -kx;
+	                ky = -ky;
+	              }
 	            };
 	          };
 
 	          _context.next = 3;
-	          return (0, _readImage2.default)('./jiongxiong.jpeg');
+	          return (0, _readImage2.default)('./77.jpg');
 
 	        case 3:
 	          img = _context.sent;
-	          imgWidth = parseInt(img.width / 2, 10);
-	          imgHeight = parseInt(img.height / 2, 10);
+	          imgWidth = parseInt(img.width / 4, 10);
+	          imgHeight = parseInt(img.height / 4, 10);
 	          canvasWidth = _ctx.canvas.width;
 	          canvasHeight = _ctx.canvas.height;
 	          startX = parseInt((canvasWidth - imgWidth) / 2, 10);
@@ -8250,7 +8281,6 @@
 	              var color = [0, 1, 2].map(function (index) {
 	                return imgInfo.data[4 * N + index];
 	              });
-	              debugger;
 	              var sum = color.reduce(function (sumed, x) {
 	                return sumed + x;
 	              }, 0);
@@ -8267,35 +8297,57 @@
 	              _loop(j);
 	            }
 	          }
-	          pSize = 400;
-	          particles = new Array(pSize).fill(0).map(function () {
-	            return nextRandomParticle();
-	          });
+	          revCount = 0;
+	          pauseCount = 0;
+	          initLength = newState.length;
+	          pSize = 50000;
+	          particles = [];
 
 	          setInterval(function () {
-	            var moving = [];
-	            for (var i = 0; i < pSize; i++) {
-	              var info = particles[i]();
-	              if (!info) {
-	                particles[i] = nextRandomParticle();
-	              } else {
-	                moving.push(info);
-	              }
+	            if (pauseCount) {
+	              pauseCount--;
+	              return;
 	            }
-	            _ctx.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-	            _ctx.ctx.fillStyle = '#fefefe';
-	            _ctx.ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-	            [].concat(moving, newState).forEach(function (_ref) {
-	              var x = _ref.x,
-	                  y = _ref.y,
-	                  fillStyle = _ref.fillStyle;
+	            if (particles.length && !particles[particles.length - 1]) {
+	              particles.pop();
+	              for (var _i2 = 0; _i2 < particles.length; _i2++) {
+	                particles[_i2].reverse();
+	              }
+	              pauseCount = 1;
+	              nextRandomParticle = null;
+	            } else {
+	              var moving = [];
+	              if (typeof nextRandomParticle === 'function') {
+	                for (var _i3 = 0; _i3 < pSize; _i3++) {
+	                  var func = nextRandomParticle();
+	                  if (func) {
+	                    particles.push(func);
+	                  } else if (particles[particles.length - 1]) {
+	                    particles.push(null);
+	                  }
+	                }
+	              }
+	              for (var _i4 = 0; _i4 < particles.length; _i4++) {
+	                var info = particles[_i4].next();
+	                if (info) {
+	                  moving.push(info);
+	                }
+	              }
+	              _ctx.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+	              _ctx.ctx.fillStyle = '#fefefe';
+	              _ctx.ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+	              [].concat(moving, newState).forEach(function (_ref) {
+	                var x = _ref.x,
+	                    y = _ref.y,
+	                    fillStyle = _ref.fillStyle;
 
-	              _ctx.ctx.fillStyle = fillStyle;
-	              _ctx.ctx.fillRect(x, y, 2, 2);
-	            });
+	                _ctx.ctx.fillStyle = fillStyle;
+	                _ctx.ctx.fillRect(x, y, 2, 2);
+	              });
+	            }
 	          }, 33);
 
-	        case 17:
+	        case 20:
 	        case 'end':
 	          return _context.stop();
 	      }
