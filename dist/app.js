@@ -8199,7 +8199,7 @@
 	var RANDOM_FACTOR = 5;
 
 	(0, _co2.default)(regeneratorRuntime.mark(function _callee() {
-	  var img, imgWidth, imgHeight, startX, startY, imgInfo, newState, i, _loop, j, nextRandomParticle, pSize, particles;
+	  var img, imgWidth, imgHeight, canvasWidth, canvasHeight, startX, startY, imgInfo, newState, i, _loop, j, nextRandomParticle, pSize, particles;
 
 	  return regeneratorRuntime.wrap(function _callee$(_context) {
 	    while (1) {
@@ -8233,21 +8233,26 @@
 
 	        case 3:
 	          img = _context.sent;
-	          imgWidth = img.width;
-	          imgHeight = img.height;
-	          startX = (_ctx.canvas.width - imgWidth) / 2;
-	          startY = (_ctx.canvas.height - imgHeight) / 2;
+	          imgWidth = parseInt(img.width / 2, 10);
+	          imgHeight = parseInt(img.height / 2, 10);
+	          canvasWidth = _ctx.canvas.width;
+	          canvasHeight = _ctx.canvas.height;
+	          startX = parseInt((canvasWidth - imgWidth) / 2, 10);
+	          startY = parseInt((canvasHeight - imgHeight) / 2, 10);
 
 	          _ctx.ctx.drawImage(img, startX, startY, imgWidth, imgHeight);
-	          imgInfo = _ctx.ctx.getImageData(0, 0, _ctx.canvas.width, _ctx.canvas.height);
+	          imgInfo = _ctx.ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+
+	          console.log(imgInfo);
 	          newState = [];
 
-	          for (i = 0; i < img.height; i++) {
+	          for (i = 0; i < imgHeight; i++) {
 	            _loop = function _loop(j) {
-	              var N = (i + startY) * _ctx.canvas.width + j + startX;
+	              var N = (i + startY) * canvasWidth + j + startX;
 	              var color = [0, 1, 2].map(function (index) {
 	                return imgInfo.data[4 * N + index];
 	              });
+	              debugger;
 	              var sum = color.reduce(function (sumed, x) {
 	                return sumed + x;
 	              }, 0);
@@ -8255,16 +8260,16 @@
 	                newState.push({
 	                  x: j + startX + (0.5 - random()) * RANDOM_FACTOR,
 	                  y: i + startY + (0.5 - random()) * RANDOM_FACTOR,
-	                  fillStyle: 'rgba(' + color.join(',') + ', 1.0)'
+	                  fillStyle: 'rgba(' + color.join(',') + ', 0.5)'
 	                });
+	                console.log('rgba(' + color.join(',') + ', 0.5)');
 	              }
 	            };
 
-	            for (j = 0; j < img.width; j++) {
+	            for (j = 0; j < imgWidth; j++) {
 	              _loop(j);
 	            }
 	          }
-	          imgInfo = null;
 	          pSize = 400;
 	          particles = new Array(pSize).fill(0).map(function () {
 	            return nextRandomParticle();
@@ -8280,9 +8285,9 @@
 	                moving.push(info);
 	              }
 	            }
-	            _ctx.ctx.clearRect(0, 0, _ctx.canvas.width, _ctx.canvas.height);
+	            _ctx.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 	            _ctx.ctx.fillStyle = '#fefefe';
-	            _ctx.ctx.fillRect(0, 0, _ctx.canvas.width, _ctx.canvas.height);
+	            _ctx.ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 	            [].concat(moving, newState).forEach(function (_ref) {
 	              var x = _ref.x,
 	                  y = _ref.y,
@@ -8293,7 +8298,7 @@
 	            });
 	          }, 33);
 
-	        case 16:
+	        case 18:
 	        case 'end':
 	          return _context.stop();
 	      }

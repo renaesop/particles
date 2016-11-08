@@ -10,33 +10,37 @@ const RANDOM_FACTOR = 5;
 
 co(function *() {
   const img = yield readImage('./jiongxiong.jpeg');
-  const imgWidth = img.width;
-  const imgHeight = img.height;
-  const startX = (canvas.width - imgWidth) / 2;
-  const startY = (canvas.height - imgHeight) / 2;
+  const imgWidth = parseInt(img.width / 2, 10);
+  const imgHeight = parseInt(img.height / 2, 10);
+  const canvasWidth = canvas.width;
+  const canvasHeight = canvas.height;
+  const startX = parseInt((canvasWidth - imgWidth) / 2, 10);
+  const startY = parseInt((canvasHeight - imgHeight) / 2, 10);
   ctx.drawImage(img,
     startX,
     startY,
     imgWidth,
     imgHeight,
   );
-  let imgInfo = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  let imgInfo = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+  console.log(imgInfo);
   const newState = [];
-  for (let i = 0; i < img.height; i++) {
-    for (let j = 0; j < img.width; j++) {
-      const N = (i + startY) * canvas.width + j + startX;
+  for (let i = 0; i < imgHeight; i++) {
+    for (let j = 0; j < imgWidth; j++) {
+      const N = (i + startY) * canvasWidth + j + startX;
       const color = [0, 1, 2].map(index => imgInfo.data[4 * N + index]);
+      debugger;
       const sum = color.reduce((sumed, x) => sumed + x, 0);
       if (sum < 755) {
         newState.push({
           x: j + startX + (0.5 - random()) * RANDOM_FACTOR,
           y: i + startY + (0.5 - random()) * RANDOM_FACTOR,
-          fillStyle: `rgba(${color.join(',')}, 1.0)`,
+          fillStyle: `rgba(${color.join(',')}, 0.5)`,
         });
+        console.log(`rgba(${color.join(',')}, 0.5)`);
       }
     }
   }
-  imgInfo = null;
   function nextRandomParticle() {
     const l = newState.length;
     const index = parseInt(random() * l, 10);
@@ -69,9 +73,9 @@ co(function *() {
         moving.push(info);
       }
     }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.fillStyle = '#fefefe';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     [...moving, ...newState].forEach(({ x, y, fillStyle }) => {
       ctx.fillStyle = fillStyle;
       ctx.fillRect(x, y, 2, 2);
