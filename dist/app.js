@@ -8242,8 +8242,6 @@
 
 	          _ctx.ctx.drawImage(img, startX, startY, imgWidth, imgHeight);
 	          imgInfo = _ctx.ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-
-	          console.log(imgInfo);
 	          newState = [];
 
 	          for (i = 0; i < imgHeight; i++) {
@@ -8262,7 +8260,6 @@
 	                  y: i + startY + (0.5 - random()) * RANDOM_FACTOR,
 	                  fillStyle: 'rgba(' + color.join(',') + ', 0.5)'
 	                });
-	                console.log('rgba(' + color.join(',') + ', 0.5)');
 	              }
 	            };
 
@@ -8298,7 +8295,7 @@
 	            });
 	          }, 33);
 
-	        case 18:
+	        case 17:
 	        case 'end':
 	          return _context.stop();
 	      }

@@ -23,7 +23,6 @@ co(function *() {
     imgHeight,
   );
   let imgInfo = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-  console.log(imgInfo);
   const newState = [];
   for (let i = 0; i < imgHeight; i++) {
     for (let j = 0; j < imgWidth; j++) {
@@ -37,7 +36,6 @@ co(function *() {
           y: i + startY + (0.5 - random()) * RANDOM_FACTOR,
           fillStyle: `rgba(${color.join(',')}, 0.5)`,
         });
-        console.log(`rgba(${color.join(',')}, 0.5)`);
       }
     }
   }
