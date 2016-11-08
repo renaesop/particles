@@ -54,7 +54,7 @@ co(function *() {
       };
     };
   }
-  const pSize = 400;
+  const pSize = 100;
   const particles = new Array(pSize).fill(0).map(() => nextRandomParticle());
   setInterval(() => {
     const moving = [];
@@ -72,7 +72,7 @@ co(function *() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     [...moving, ...newState].forEach(({ x, y, fillStyle }) => {
       ctx.fillStyle = fillStyle;
-      ctx.fillRect(x, y, 1, 1);
+      ctx.fillRect(x, y, 2, 2);
     });
   }, 30);
 });
