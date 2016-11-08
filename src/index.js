@@ -42,11 +42,10 @@ co(function *() {
   function nextRandomParticle() {
     const l = newState.length;
     const index = parseInt(random() * l, 10);
-    const { x: x0, y: y0 } = newState[index];
+    const { x: x0, y: y0, fillStyle } = newState[index];
     const liveTime = parseInt(random() * 500, 10) + 100;
     const kx = (random() - 0.5) * 2 ;
     const ky = (random() - 0.5) * 2;
-    const fillStyle = random() > 0.3 ? '#60BE29' : '#E01515'
     let pastTime = 0;
     return function next() {
       if (pastTime > liveTime) return null;

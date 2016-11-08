@@ -8210,12 +8210,12 @@
 	            var index = parseInt(random() * l, 10);
 	            var _newState$index = newState[index],
 	                x0 = _newState$index.x,
-	                y0 = _newState$index.y;
+	                y0 = _newState$index.y,
+	                fillStyle = _newState$index.fillStyle;
 
 	            var liveTime = parseInt(random() * 500, 10) + 100;
 	            var kx = (random() - 0.5) * 2;
 	            var ky = (random() - 0.5) * 2;
-	            var fillStyle = random() > 0.3 ? '#60BE29' : '#E01515';
 	            var pastTime = 0;
 	            return function next() {
 	              if (pastTime > liveTime) return null;
