@@ -50,9 +50,9 @@ co(function *() {
     if (l <= 0) return null;
     const index = parseInt(random() * l, 10);
     let { x: x0, y: y0, fillStyle } = newState.splice(index, 1)[0];
-    const liveTime = parseInt(random() * 10, 10) + 100;
-    let kx = (random() - 0.5) * 1 ;
-    let ky = (random() - 0.5) * 1;
+    const liveTime = parseInt(random() * 10, 10) + 200;
+    let kx = (random() - 0.5) * 0.1 ;
+    let ky = (random() - 0.5) * 0.1;
     let pastTime = 0;
     let reversed = false;
     return {

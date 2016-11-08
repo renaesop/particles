@@ -1,6 +1,7 @@
 /**
  * Created by fed on 2016/11/8.
  */
+const ug = require('webpack/lib/optimize/UglifyJsPlugin');
 module.exports = {
   entry:  ['babel-polyfill', './src/index'],
   output: {
@@ -20,5 +21,10 @@ module.exports = {
         loaders: ['file'],
       },
     ],
-  }
+  },
+  plugins: [
+    new ug({
+      minimize: true,
+    }),
+  ]
 };
