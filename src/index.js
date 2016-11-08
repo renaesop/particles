@@ -6,7 +6,7 @@ import readImage from './read-image';
 import co from 'co';
 
 const { random } = Math;
-const RANDOM_FACTOR = 2;
+const RANDOM_FACTOR = 5;
 
 co(function *() {
   const img = yield readImage('./jiongxiong.jpeg');
@@ -20,7 +20,7 @@ co(function *() {
     imgWidth,
     imgHeight,
   );
-  const imgInfo = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  let imgInfo = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const newState = [];
   for (let i = 0; i < img.height; i++) {
     for (let j = 0; j < img.width; j++) {
@@ -36,13 +36,15 @@ co(function *() {
       }
     }
   }
+  imgInfo = null;
   function nextRandomParticle() {
     const l = newState.length;
     const index = parseInt(random() * l, 10);
     const { x: x0, y: y0 } = newState[index];
     const liveTime = parseInt(random() * 500, 10) + 100;
-    const kx = (random() - 0.5) * RANDOM_FACTOR;
-    const ky = (random() - 0.5) * RANDOM_FACTOR;
+    const kx = (random() - 0.5) * 2 ;
+    const ky = (random() - 0.5) * 2;
+    const fillStyle = random() > 0.3 ? '#60BE29' : '#E01515'
     let pastTime = 0;
     return function next() {
       if (pastTime > liveTime) return null;
@@ -50,11 +52,11 @@ co(function *() {
       return {
           x: x0 + pastTime * kx,
           y: y0 + pastTime * ky,
-          fillStyle: random() > 0.3 ? '#60BE29' : '#E01515',
+          fillStyle,
       };
     };
   }
-  const pSize = 100;
+  const pSize = 400;
   const particles = new Array(pSize).fill(0).map(() => nextRandomParticle());
   setInterval(() => {
     const moving = [];
@@ -74,5 +76,5 @@ co(function *() {
       ctx.fillStyle = fillStyle;
       ctx.fillRect(x, y, 2, 2);
     });
-  }, 30);
+  }, 33);
 });

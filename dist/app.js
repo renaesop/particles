@@ -8196,7 +8196,7 @@
 	                           * Created by fed on 2016/11/8.
 	                           */
 
-	var RANDOM_FACTOR = 2;
+	var RANDOM_FACTOR = 5;
 
 	(0, _co2.default)(regeneratorRuntime.mark(function _callee() {
 	  var img, imgWidth, imgHeight, startX, startY, imgInfo, newState, i, _loop, j, nextRandomParticle, pSize, particles;
@@ -8213,8 +8213,9 @@
 	                y0 = _newState$index.y;
 
 	            var liveTime = parseInt(random() * 500, 10) + 100;
-	            var kx = (random() - 0.5) * RANDOM_FACTOR;
-	            var ky = (random() - 0.5) * RANDOM_FACTOR;
+	            var kx = (random() - 0.5) * 2;
+	            var ky = (random() - 0.5) * 2;
+	            var fillStyle = random() > 0.3 ? '#60BE29' : '#E01515';
 	            var pastTime = 0;
 	            return function next() {
 	              if (pastTime > liveTime) return null;
@@ -8222,7 +8223,7 @@
 	              return {
 	                x: x0 + pastTime * kx,
 	                y: y0 + pastTime * ky,
-	                fillStyle: random() > 0.3 ? '#60BE29' : '#E01515'
+	                fillStyle: fillStyle
 	              };
 	            };
 	          };
@@ -8263,6 +8264,7 @@
 	              _loop(j);
 	            }
 	          }
+	          imgInfo = null;
 	          pSize = 400;
 	          particles = new Array(pSize).fill(0).map(function () {
 	            return nextRandomParticle();
@@ -8287,11 +8289,11 @@
 	                  fillStyle = _ref.fillStyle;
 
 	              _ctx.ctx.fillStyle = fillStyle;
-	              _ctx.ctx.fillRect(x, y, 1, 1);
+	              _ctx.ctx.fillRect(x, y, 2, 2);
 	            });
-	          }, 30);
+	          }, 33);
 
-	        case 15:
+	        case 16:
 	        case 'end':
 	          return _context.stop();
 	      }
