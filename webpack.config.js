@@ -18,7 +18,7 @@ module.exports = {
       },
       {
         test: /\.(jpg|jpeg|png)$/,
-        loaders: ['file'],
+        loaders: ['file?name=[sha512:hash:base64:7].[ext]'],
       },
     ],
   },
