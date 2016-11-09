@@ -23,8 +23,8 @@ module.exports = {
     ],
   },
   plugins: [
-    new ug({
-      minimize: true,
-    }),
+    // new ug({
+    //   minimize: true,
+    // }),
   ]
 };
