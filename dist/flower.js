@@ -9487,8 +9487,8 @@
 	});
 
 	exports.default = function (canvas, ctx, img) {
-	  var imgWidth = parseInt(img.width / 2, 10);
-	  var imgHeight = parseInt(img.height / 2, 10);
+	  var imgWidth = parseInt(img.width / 4, 10);
+	  var imgHeight = parseInt(img.height / 4, 10);
 	  var canvasWidth = canvas.width;
 	  var canvasHeight = canvas.height;
 	  var x0 = parseInt(canvasWidth / 2, 10);

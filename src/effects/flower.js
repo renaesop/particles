@@ -16,8 +16,8 @@ function nextPosition(x0, y0, kx, ky, pastTime, fillStyle) {
 }
 
 export default function (canvas, ctx, img) {
-  const imgWidth = parseInt(img.width / 2, 10);
-  const imgHeight = parseInt(img.height / 2, 10);
+  const imgWidth = parseInt(img.width / 4, 10);
+  const imgHeight = parseInt(img.height / 4, 10);
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
   const x0 = parseInt(canvasWidth / 2, 10);
