@@ -35,9 +35,9 @@ co(function *() {
       const sum = color.reduce((sumed, x) => sumed + x, 0);
       if (sum < 755) {
         newState.push({
-          x: j + startX + (0.5 - random()) * RANDOM_FACTOR,
-          y: i + startY + (0.5 - random()) * RANDOM_FACTOR,
-          fillStyle: `rgba(${color.join(',')}, 0.5)`,
+          x: j + startX + (0.5 - random()) * RANDOM_FACTOR * 0,
+          y: i + startY + (0.5 - random()) * RANDOM_FACTOR * 0,
+          fillStyle: `rgba(${color.join(',')}, 0.99)`,
         });
       }
     }
@@ -51,8 +51,8 @@ co(function *() {
     const index = parseInt(random() * l, 10);
     let { x: x0, y: y0, fillStyle } = newState.splice(index, 1)[0];
     const liveTime = parseInt(random() * 10, 10) + 200;
-    let kx = (random() - 0.5) * 0.1 ;
-    let ky = (random() - 0.5) * 0.1;
+    let kx = (random() - 0.5) * 0.2 ;
+    let ky = (random() - 0.5) * 0.2;
     let pastTime = 0;
     let reversed = false;
     return {
@@ -126,11 +126,11 @@ co(function *() {
         }
       }
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      ctx.fillStyle = '#fefefe';
+      ctx.fillStyle = '#001';
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
       [...moving, ...newState].forEach(({ x, y, fillStyle }) => {
         ctx.fillStyle = fillStyle;
-        ctx.fillRect(x, y, 2, 2);
+        ctx.fillRect(x, y, 1, 1);
       });
     }
   }, 33);
