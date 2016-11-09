@@ -3,11 +3,14 @@
  */
 const ug = require('webpack/lib/optimize/UglifyJsPlugin');
 module.exports = {
-  entry:  ['babel-polyfill', './src/index'],
+  entry:  {
+    app: ['babel-polyfill', './src/index'],
+    flower: ['babel-polyfill', './src/flower'],
+  },
   output: {
     path: './dist',
     publicPath: 'dist/',
-    filename: 'app.js',
+    filename: '[name].js',
   },
   module: {
     loaders: [
