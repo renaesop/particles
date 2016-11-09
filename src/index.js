@@ -13,7 +13,7 @@ function square(x) {
 }
 
 co(function *() {
-  const img = yield readImage('./77.jpg');
+  const img = yield readImage('./77.png');
   const imgWidth = parseInt(img.width / 4, 10);
   const imgHeight = parseInt(img.height / 4, 10);
   const canvasWidth = canvas.width;
