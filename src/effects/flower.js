@@ -73,25 +73,28 @@ export default function (canvas, ctx, img) {
   }
   const pSize = 10;
   const particles = [];
+  const moving = [];
+  let nextStart = 0;
   const animationFn = () => {
-    const moving = [];
     for (let i = 0; i < pSize && newState.length; i++) {
       const func = nextRandomParticle();
       if (func) {
         particles.push(func);
       }
     }
-    for (let i = 0; i < particles.length; i++) {
+    for (let i = nextStart; i < particles.length; i += 2) {
       const info = particles[i]();
       if (info) {
-        moving.push(info);
+        moving[i] = info;
       }
     }
+    nextStart = nextStart ? 0 : 1;
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     const l = moving.length;
     for (let i = 0; i < moving.length; i++) {
+      if (!moving[i]) continue;
       const { x, y, fillStyle } = moving[i];
       ctx.fillStyle = fillStyle;
       ctx.fillRect(x, y, 1, 1);

@@ -9554,25 +9554,28 @@
 	  }
 	  var pSize = 10;
 	  var particles = [];
+	  var moving = [];
+	  var nextStart = 0;
 	  var animationFn = function animationFn() {
-	    var moving = [];
 	    for (var _i = 0; _i < pSize && newState.length; _i++) {
 	      var func = nextRandomParticle();
 	      if (func) {
 	        particles.push(func);
 	      }
 	    }
-	    for (var _i2 = 0; _i2 < particles.length; _i2++) {
+	    for (var _i2 = nextStart; _i2 < particles.length; _i2 += 2) {
 	      var info = particles[_i2]();
 	      if (info) {
-	        moving.push(info);
+	        moving[_i2] = info;
 	      }
 	    }
+	    nextStart = nextStart ? 0 : 1;
 	    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 	    ctx.fillStyle = bgColor;
 	    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 	    var l = moving.length;
 	    for (var _i3 = 0; _i3 < moving.length; _i3++) {
+	      if (!moving[_i3]) continue;
 	      var _moving$_i = moving[_i3],
 	          x = _moving$_i.x,
 	          y = _moving$_i.y,
