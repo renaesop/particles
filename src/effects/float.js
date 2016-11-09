@@ -7,6 +7,16 @@ import {
 } from '../math/math';
 
 const RANDOM_FACTOR = 5;
+const bgColor = '#fff';
+
+function nextPosition(x0, y0, kx, ky, pastTime, liveTime, fillStyle) {
+  const factor = 1 - square(0.5 - pastTime/liveTime);
+  return {
+    x: x0 + (pastTime * kx + square(pastTime) * kx) * factor,
+    y: y0 + (pastTime * ky + square(pastTime) * ky) * factor,
+    fillStyle,
+  };
+}
 
 export default function (canvas, ctx, img) {
   const imgWidth = parseInt(img.width / 4, 10);
@@ -15,6 +25,8 @@ export default function (canvas, ctx, img) {
   const canvasHeight = canvas.height;
   const startX = parseInt((canvasWidth - imgWidth) / 2, 10);
   const startY = parseInt((canvasHeight - imgHeight) / 2, 10);
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
   ctx.drawImage(img,
     startX,
     startY,
@@ -28,7 +40,7 @@ export default function (canvas, ctx, img) {
       const N = (i + startY) * canvasWidth + j + startX;
       const color = [0, 1, 2].map(index => imgInfo.data[4 * N + index]);
       const sum = color.reduce((sumed, x) => sumed + x, 0);
-      if (sum < 755) {
+      if (sum < 665 && random() > 0.5) {
         newState.push({
           x: j + startX + (0.5 - random()) * RANDOM_FACTOR * 0,
           y: i + startY + (0.5 - random()) * RANDOM_FACTOR * 0,
@@ -46,8 +58,8 @@ export default function (canvas, ctx, img) {
     const index = parseInt(random() * l, 10);
     let { x: x0, y: y0, fillStyle } = newState.splice(index, 1)[0];
     const liveTime = parseInt(random() * 10, 10) + 200;
-    let kx = (random() - 0.5) * 0.2 ;
-    let ky = (random() - 0.5) * 0.2;
+    let kx = (random() - 0.5) * 0.1 ;
+    let ky = (random() - 0.5) * 0.1;
     let pastTime = 0;
     let added = false;
     return {
@@ -70,12 +82,7 @@ export default function (canvas, ctx, img) {
         else {
           pastTime++;
         }
-        const factor = 1 - square(0.5 - pastTime/liveTime);
-        return {
-          x: x0 + (pastTime * kx + pastTime * pastTime * kx) * factor,
-          y: y0 + (pastTime * ky + pastTime * pastTime * ky) * factor,
-          fillStyle,
-        };
+        return nextPosition(x0, y0, kx, ky, pastTime, liveTime, fillStyle);
       },
       reverse() {
         added = false;
@@ -91,7 +98,10 @@ export default function (canvas, ctx, img) {
   const pSize = 100;
   const particles = [];
   let lastResult;
-  setInterval(() => {
+  function traverse(ctx) {
+
+  }
+  const animationFn = () => {
     if (pauseCount) {
       pauseCount--;
     }
@@ -124,11 +134,15 @@ export default function (canvas, ctx, img) {
       }
     }
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    ctx.fillStyle = '#001';
+    ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-    lastResult.forEach(({ x, y, fillStyle }) => {
+    const l = lastResult.length;
+    for (let i = 0; i < lastResult.length; i++) {
+      const { x, y, fillStyle } = lastResult[i];
       ctx.fillStyle = fillStyle;
       ctx.fillRect(x, y, 1, 1);
-    });
-  }, 33);
+    }
+    requestAnimationFrame(animationFn);
+  };
+  requestAnimationFrame(animationFn);
 }

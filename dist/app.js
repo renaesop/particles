@@ -9445,7 +9445,7 @@
 /* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__.p + "3VEc93K.png";
+	module.exports = __webpack_require__.p + "aNyKF8r.png";
 
 /***/ },
 /* 315 */
@@ -9470,6 +9470,8 @@
 	  var canvasHeight = canvas.height;
 	  var startX = parseInt((canvasWidth - imgWidth) / 2, 10);
 	  var startY = parseInt((canvasHeight - imgHeight) / 2, 10);
+	  ctx.fillStyle = bgColor;
+	  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 	  ctx.drawImage(img, startX, startY, imgWidth, imgHeight);
 	  var imgInfo = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
 	  var newState = [];
@@ -9482,7 +9484,7 @@
 	      var sum = color.reduce(function (sumed, x) {
 	        return sumed + x;
 	      }, 0);
-	      if (sum < 755) {
+	      if (sum < 665 && (0, _math.random)() > 0.5) {
 	        newState.push({
 	          x: j + startX + (0.5 - (0, _math.random)()) * RANDOM_FACTOR * 0,
 	          y: i + startY + (0.5 - (0, _math.random)()) * RANDOM_FACTOR * 0,
@@ -9508,8 +9510,8 @@
 	        fillStyle = _newState$splice$.fillStyle;
 
 	    var liveTime = parseInt((0, _math.random)() * 10, 10) + 200;
-	    var kx = ((0, _math.random)() - 0.5) * 0.2;
-	    var ky = ((0, _math.random)() - 0.5) * 0.2;
+	    var kx = ((0, _math.random)() - 0.5) * 0.1;
+	    var ky = ((0, _math.random)() - 0.5) * 0.1;
 	    var pastTime = 0;
 	    var added = false;
 	    return {
@@ -9530,12 +9532,7 @@
 	        } else {
 	          pastTime++;
 	        }
-	        var factor = 1 - (0, _math.square)(0.5 - pastTime / liveTime);
-	        return {
-	          x: x0 + (pastTime * kx + pastTime * pastTime * kx) * factor,
-	          y: y0 + (pastTime * ky + pastTime * pastTime * ky) * factor,
-	          fillStyle: fillStyle
-	        };
+	        return nextPosition(x0, y0, kx, ky, pastTime, liveTime, fillStyle);
 	      },
 	      reverse: function reverse() {
 	        added = false;
@@ -9551,7 +9548,8 @@
 	  var pSize = 100;
 	  var particles = [];
 	  var lastResult = void 0;
-	  setInterval(function () {
+	  function traverse(ctx) {}
+	  var animationFn = function animationFn() {
 	    if (pauseCount) {
 	      pauseCount--;
 	    } else {
@@ -9582,17 +9580,21 @@
 	      }
 	    }
 	    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-	    ctx.fillStyle = '#001';
+	    ctx.fillStyle = bgColor;
 	    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-	    lastResult.forEach(function (_ref) {
-	      var x = _ref.x,
-	          y = _ref.y,
-	          fillStyle = _ref.fillStyle;
+	    var l = lastResult.length;
+	    for (var _i4 = 0; _i4 < lastResult.length; _i4++) {
+	      var _lastResult$_i = lastResult[_i4],
+	          x = _lastResult$_i.x,
+	          y = _lastResult$_i.y,
+	          fillStyle = _lastResult$_i.fillStyle;
 
 	      ctx.fillStyle = fillStyle;
 	      ctx.fillRect(x, y, 1, 1);
-	    });
-	  }, 33);
+	    }
+	    requestAnimationFrame(animationFn);
+	  };
+	  requestAnimationFrame(animationFn);
 	};
 
 	var _math = __webpack_require__(317);
@@ -9600,6 +9602,17 @@
 	var RANDOM_FACTOR = 5; /**
 	                        * Created by fed on 2016/11/9.
 	                        */
+
+	var bgColor = '#fff';
+
+	function nextPosition(x0, y0, kx, ky, pastTime, liveTime, fillStyle) {
+	  var factor = 1 - (0, _math.square)(0.5 - pastTime / liveTime);
+	  return {
+	    x: x0 + (pastTime * kx + (0, _math.square)(pastTime) * kx) * factor,
+	    y: y0 + (pastTime * ky + (0, _math.square)(pastTime) * ky) * factor,
+	    fillStyle: fillStyle
+	  };
+	}
 
 /***/ },
 /* 317 */
