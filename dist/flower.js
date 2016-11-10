@@ -9826,7 +9826,7 @@
 	      return nextPosition(x0, y0, x - x0, y - y0, pastTime, liveTime, fillStyle, fn);
 	    };
 	  }
-	  var pSize = 100;
+	  var pSize = 150;
 	  var particles = [];
 	  var moving = [];
 	  var nextStart = 0;

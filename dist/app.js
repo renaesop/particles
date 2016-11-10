@@ -9469,7 +9469,7 @@
 	  var canvasWidth = canvas.width;
 	  var canvasHeight = canvas.height;
 	  var startX = parseInt((canvasWidth - imgWidth) / 2, 10);
-	  var startY = parseInt((canvasHeight - imgHeight) / 2, 10);
+	  var startY = parseInt(canvasHeight - imgHeight, 10);
 	  ctx.fillStyle = bgColor;
 	  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 	  ctx.drawImage(img, startX, startY, imgWidth, imgHeight);
@@ -9484,7 +9484,7 @@
 	      var sum = color.reduce(function (sumed, x) {
 	        return sumed + x;
 	      }, 0);
-	      if (sum < 665 && (0, _math.random)() > 0.5) {
+	      if (sum < 665) {
 	        newState.push({
 	          x: j + startX + (0.5 - (0, _math.random)()) * RANDOM_FACTOR * 0,
 	          y: i + startY + (0.5 - (0, _math.random)()) * RANDOM_FACTOR * 0,

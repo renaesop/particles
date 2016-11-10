@@ -24,7 +24,7 @@ export default function (canvas, ctx, img) {
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
   const startX = parseInt((canvasWidth - imgWidth) / 2, 10);
-  const startY = parseInt((canvasHeight - imgHeight) / 2, 10);
+  const startY = parseInt((canvasHeight - imgHeight), 10);
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
   ctx.drawImage(img,
@@ -40,7 +40,7 @@ export default function (canvas, ctx, img) {
       const N = (i + startY) * canvasWidth + j + startX;
       const color = [0, 1, 2].map(index => imgInfo.data[4 * N + index]);
       const sum = color.reduce((sumed, x) => sumed + x, 0);
-      if (sum < 665 && random() > 0.5) {
+      if (sum < 665) {
         newState.push({
           x: j + startX + (0.5 - random()) * RANDOM_FACTOR * 0,
           y: i + startY + (0.5 - random()) * RANDOM_FACTOR * 0,

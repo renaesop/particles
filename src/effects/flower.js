@@ -70,7 +70,7 @@ export default function (canvas, ctx, img, fn) {
       return nextPosition(x0, y0, x - x0, y - y0, pastTime, liveTime, fillStyle, fn);
     };
   }
-  let pSize = 400;
+  let pSize = 150;
   const particles = [];
   const moving = [];
   let nextStart = 0;
