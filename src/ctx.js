@@ -4,7 +4,7 @@
 export const canvas = document.createElement('canvas');
 export const ctx = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = window.innerWidth ;
+canvas.height = window.innerHeight - 40;
 
 document.body.appendChild(canvas);

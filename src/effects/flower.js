@@ -7,15 +7,16 @@ import {
 
 const bgColor = '#fff';
 
-function nextPosition(x0, y0, kx, ky, pastTime, fillStyle) {
+function nextPosition(x0, y0, dx, dy, pastTime, liveTime, fillStyle, fn) {
   return {
-    x: x0 + pastTime * kx,
-    y: y0 + pastTime * ky,
+    x: fn(pastTime, x0, dx, liveTime),
+    y: fn(pastTime, y0, dy, liveTime),
     fillStyle,
   };
 }
 
-export default function (canvas, ctx, img) {
+export default function (canvas, ctx, img, fn) {
+  let forceExit = false;
   const imgWidth = parseInt(img.width / 4, 10);
   const imgHeight = parseInt(img.height / 4, 10);
   const canvasWidth = canvas.width;
@@ -40,10 +41,8 @@ export default function (canvas, ctx, img) {
       const color = [0, 1, 2].map(index => imgInfo.data[4 * N + index]);
       const sum = color.reduce((sumed, x) => sumed + x, 0);
       if (sum < 665 && random() > 0.5) {
-        const liveTime = parseInt(random() * 200, 10) + 100;
+        const liveTime = parseInt(random() * 100, 10) + 50;
         newState.push({
-          kx: (j + startX - x0) / liveTime,
-          ky: (i + startY - y0) / liveTime,
           liveTime,
           fillStyle: `rgba(${color.join(',')}, 0.99)`,
           x: j + startX,
@@ -57,7 +56,7 @@ export default function (canvas, ctx, img) {
     const l = newState.length;
     if (l <= 0) return null;
     const index = parseInt(random() * l, 10);
-    const { kx, ky, liveTime, fillStyle, x, y } = newState.splice(index, 1)[0];
+    const { liveTime, fillStyle, x, y } = newState.splice(index, 1)[0];
     let pastTime = 0;
     return function next() {
       if (pastTime >= liveTime) {
@@ -68,10 +67,10 @@ export default function (canvas, ctx, img) {
         };
       }
       pastTime++;
-      return nextPosition(x0, y0, kx, ky, pastTime, fillStyle);
+      return nextPosition(x0, y0, x - x0, y - y0, pastTime, liveTime, fillStyle, fn);
     };
   }
-  const pSize = 10;
+  let pSize = 100;
   const particles = [];
   const moving = [];
   let nextStart = 0;
@@ -99,7 +98,13 @@ export default function (canvas, ctx, img) {
       ctx.fillStyle = fillStyle;
       ctx.fillRect(x, y, 1, 1);
     }
-    requestAnimationFrame(animationFn);
+    !forceExit && requestAnimationFrame(animationFn);
+    if (pSize > 5) {
+      pSize -= 3;
+    }
   };
   requestAnimationFrame(animationFn);
+  return function () {
+   forceExit = true;
+  }
 }
