@@ -42,10 +42,10 @@ class Point {
       ctx.beginPath();
       points.forEach(point => {
         if (outOfRange(width, height, point.x, point.y)) {
-          point.fadedCount < 30 && point.fadedCount++;
+          point.fadedCount < 100 && point.fadedCount++;
         }
         const d = sqrt(square(this.x - point.x) + square(this.y - point.y));
-        ctx.strokeStyle = `rgba(${strokeStyle.concat([0.4 * (1 - d / this.max) * (1 - this.fadedCount / 30) * (1 - this.startCount / 100)]).join(',')})`;
+        ctx.strokeStyle = `rgba(${strokeStyle.concat([0.4 * (1 - d / this.max) * (1 - point.fadedCount / 100) * (1 - this.startCount / 100)]).join(',')})`;
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
         ctx.lineTo(point.x, point.y);
@@ -63,7 +63,7 @@ class Point {
       this.startCount && this.startCount--;
     }
     else {
-      this.duration = parseInt(1500 + ((0.5 - random()) * 1000), 10);
+      this.duration = parseInt(1500 + ((0.5 - random()) * 2000), 10);
       this.pastTime = 0;
       this.fadedCount = 0;
       this.startCount = 100;

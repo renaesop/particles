@@ -8572,10 +8572,10 @@
 	        ctx.beginPath();
 	        points.forEach(function (point) {
 	          if (outOfRange(width, height, point.x, point.y)) {
-	            point.fadedCount < 30 && point.fadedCount++;
+	            point.fadedCount < 100 && point.fadedCount++;
 	          }
 	          var d = (0, _math.sqrt)((0, _math.square)(_this.x - point.x) + (0, _math.square)(_this.y - point.y));
-	          ctx.strokeStyle = 'rgba(' + strokeStyle.concat([0.4 * (1 - d / _this.max) * (1 - _this.fadedCount / 30) * (1 - _this.startCount / 100)]).join(',') + ')';
+	          ctx.strokeStyle = 'rgba(' + strokeStyle.concat([0.4 * (1 - d / _this.max) * (1 - point.fadedCount / 100) * (1 - _this.startCount / 100)]).join(',') + ')';
 	          ctx.beginPath();
 	          ctx.moveTo(_this.x, _this.y);
 	          ctx.lineTo(point.x, point.y);
@@ -8594,7 +8594,7 @@
 	        this.pastTime++;
 	        this.startCount && this.startCount--;
 	      } else {
-	        this.duration = parseInt(1500 + (0.5 - (0, _math.random)()) * 1000, 10);
+	        this.duration = parseInt(1500 + (0.5 - (0, _math.random)()) * 2000, 10);
 	        this.pastTime = 0;
 	        this.fadedCount = 0;
 	        this.startCount = 100;
