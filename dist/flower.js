@@ -9787,7 +9787,7 @@
 	      var sum = color.reduce(function (sumed, x) {
 	        return sumed + x;
 	      }, 0);
-	      if (sum < 665 && (0, _math.random)() > 0.5) {
+	      if (sum < 665) {
 	        var liveTime = parseInt((0, _math.random)() * 100, 10) + 50;
 	        newState.push({
 	          liveTime: liveTime,

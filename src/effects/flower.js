@@ -40,7 +40,7 @@ export default function (canvas, ctx, img, fn) {
       const N = (i + startY) * canvasWidth + j + startX;
       const color = [0, 1, 2].map(index => imgInfo.data[4 * N + index]);
       const sum = color.reduce((sumed, x) => sumed + x, 0);
-      if (sum < 665 && random() > 0.5) {
+      if (sum < 665) {
         const liveTime = parseInt(random() * 100, 10) + 50;
         newState.push({
           liveTime,
@@ -70,7 +70,7 @@ export default function (canvas, ctx, img, fn) {
       return nextPosition(x0, y0, x - x0, y - y0, pastTime, liveTime, fillStyle, fn);
     };
   }
-  let pSize = 100;
+  let pSize = 400;
   const particles = [];
   const moving = [];
   let nextStart = 0;
