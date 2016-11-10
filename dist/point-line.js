@@ -8484,9 +8484,9 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	(0, _pointLine2.default)(_ctx.ctx, _ctx.canvas, 'rgba(188, 188, 188, 0.8)', 'rgba(188, 188, 188, 0.2)', _easingJs2.default.easeOutQuad); /**
-	                                                                                                                                          * Created by fed on 2016/11/10.
-	                                                                                                                                          */
+	(0, _pointLine2.default)(_ctx.ctx, _ctx.canvas, [188, 188, 188], [188, 188, 188], _easingJs2.default.easeOutQuad); /**
+	                                                                                                                    * Created by fed on 2016/11/10.
+	                                                                                                                    */
 
 /***/ },
 /* 323 */
@@ -8512,19 +8512,16 @@
 	  }).map(function (_ref2) {
 	    var x = _ref2.x,
 	        y = _ref2.y;
-	    return new Point(x, y, fn, true);
+	    return new Point(x, y, fn, canvas);
 	  });
-	  ctx.fillStyle = fillStyle;
-	  ctx.strokeStyle = strokeStyle;
 	  function f() {
 	    ctx.clearRect(0, 0, canvas.width, canvas.height);
 	    points.forEach(function (point) {
-	      return point.draw(canvas, ctx, points);
+	      return point.draw(canvas, ctx, points, fillStyle, strokeStyle);
 	    });
 	    requestAnimationFrame(f);
 	  }
 	  requestAnimationFrame(f);
-	  // setInterval(f, 30;)
 	};
 
 	var _math = __webpack_require__(317);
@@ -8552,25 +8549,33 @@
 	    this.y0 = 0;
 	    this.duration = 0;
 	    this.pastTime = 0;
+	    this.fadedCount = 0;
+	    this.startCount = 0;
 	    this.fn = fn;
-	    this.next(width, height);
+	    this.max = (0, _math.sqrt)((0, _math.square)(given ? given.width : width), (0, _math.square)(given ? given.height : height));
+	    this.next(given ? given.width : width, given ? given.height : height);
 	  }
 
 	  _createClass(Point, [{
 	    key: 'draw',
-	    value: function draw(_ref, ctx, points) {
+	    value: function draw(_ref, ctx, points, fillStyle, strokeStyle) {
 	      var width = _ref.width,
 	          height = _ref.height;
 
 	      var _this = this;
 
 	      if (!outOfRange(width, height, this.x, this.y)) {
+	        ctx.fillStyle = 'rgba(' + fillStyle.concat([0.8 * (1 - this.startCount / 100)]).join(',') + ')';
 	        ctx.beginPath();
 	        ctx.arc(this.x, this.y, this.radius, 0, 2 * _math.PI);
 	        ctx.fill();
 	        ctx.beginPath();
 	        points.forEach(function (point) {
-	          if (outOfRange(width, height, point.x, point.y)) return;
+	          if (outOfRange(width, height, point.x, point.y)) {
+	            point.fadedCount < 30 && point.fadedCount++;
+	          }
+	          var d = (0, _math.sqrt)((0, _math.square)(_this.x - point.x) + (0, _math.square)(_this.y - point.y));
+	          ctx.strokeStyle = 'rgba(' + strokeStyle.concat([0.4 * (1 - d / _this.max) * (1 - _this.fadedCount / 30) * (1 - _this.startCount / 100)]).join(',') + ')';
 	          ctx.beginPath();
 	          ctx.moveTo(_this.x, _this.y);
 	          ctx.lineTo(point.x, point.y);
@@ -8587,9 +8592,12 @@
 	        this.x = this.fn(this.pastTime, this.x0, this.nextX - this.x0, this.duration);
 	        this.y = this.fn(this.pastTime, this.y0, this.nextY - this.y0, this.duration);
 	        this.pastTime++;
+	        this.startCount && this.startCount--;
 	      } else {
-	        this.duration = 1500;
+	        this.duration = parseInt(1500 + (0.5 - (0, _math.random)()) * 1000, 10);
 	        this.pastTime = 0;
+	        this.fadedCount = 0;
+	        this.startCount = 100;
 	        if (outOfRange(width, height, this.x, this.y)) {
 	          this.x = positionGenerator(width);
 	          this.y = positionGenerator(height);
@@ -8597,13 +8605,12 @@
 	        this.x0 = this.x;
 	        this.y0 = this.y;
 	        if ((0, _math.random)() > 0.5) {
-	          this.nextX = (0, _math.random)() > 0.5 ? -1 : width + 1;
+	          this.nextX = (0, _math.random)() > 0.5 ? -8 : width + 8;
 	          this.nextY = this.y + ((0, _math.random)() - 0.5) * 2 * (height - this.y) + 50;
 	        } else {
 	          this.nextX = this.x + ((0, _math.random)() - 0.5) * 2 * (width - this.x) + 50;
-	          this.nextY = (0, _math.random)() > 0.5 ? -1 : height + 1;
+	          this.nextY = (0, _math.random)() > 0.5 ? -8 : height + 8;
 	        }
-	        console.log(this);
 	      }
 	    }
 	  }]);
