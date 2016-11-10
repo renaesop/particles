@@ -3,8 +3,8 @@
  */
 import co from 'co';
 
-import { canvas, ctx } from './ctx';
-import readImage from './read-image';
+import { canvas, ctx } from './util/ctx';
+import readImage from './util/read-image';
 import floatEffect from './effects/float';
 
 

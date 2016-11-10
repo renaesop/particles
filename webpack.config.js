@@ -6,6 +6,7 @@ module.exports = {
   entry:  {
     app: ['babel-polyfill', './src/index'],
     flower: ['babel-polyfill', './src/flower'],
+    'point-line': ['babel-polyfill', './src/point-line']
   },
   output: {
     path: './dist',

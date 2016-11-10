@@ -4,9 +4,9 @@
 import co from 'co';
 import easing from 'easing-js';
 
-import { canvas, ctx } from './ctx';
+import { canvas, ctx } from './util/ctx';
 import selectBox from './menu/easing';
-import readImage from './read-image';
+import readImage from './util/read-image';
 import flowerEffect from './effects/flower';
 
 let insStop = () => {};

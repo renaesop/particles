@@ -9422,9 +9422,11 @@
 	 * Created by fed on 2016/11/9.
 	 */
 	var random = Math.random,
-	    sqrt = Math.sqrt;
+	    sqrt = Math.sqrt,
+	    PI = Math.PI;
 	exports.random = random;
 	exports.sqrt = sqrt;
+	exports.PI = PI;
 	function square(x) {
 	  return x * x;
 	}

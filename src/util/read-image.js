@@ -2,7 +2,7 @@
  * Created by fed on 2016/11/8.
  */
 const Promise = require('promise');
-const req = require.context('./assets');
+const req = require.context('../assets');
 
 export default function readImage(name) {
   return new Promise(function (resolve) {

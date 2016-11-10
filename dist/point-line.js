@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(1);
-	module.exports = __webpack_require__(298);
+	module.exports = __webpack_require__(322);
 
 
 /***/ },
@@ -8175,296 +8175,8 @@
 	};
 
 /***/ },
-/* 298 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _co = __webpack_require__(299);
-
-	var _co2 = _interopRequireDefault(_co);
-
-	var _ctx = __webpack_require__(300);
-
-	var _readImage = __webpack_require__(301);
-
-	var _readImage2 = _interopRequireDefault(_readImage);
-
-	var _float = __webpack_require__(316);
-
-	var _float2 = _interopRequireDefault(_float);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * Created by fed on 2016/11/8.
-	 */
-	(0, _co2.default)(regeneratorRuntime.mark(function _callee() {
-	  var img;
-	  return regeneratorRuntime.wrap(function _callee$(_context) {
-	    while (1) {
-	      switch (_context.prev = _context.next) {
-	        case 0:
-	          _context.next = 2;
-	          return (0, _readImage2.default)('./77.png');
-
-	        case 2:
-	          img = _context.sent;
-
-	          (0, _float2.default)(_ctx.canvas, _ctx.ctx, img);
-
-	        case 4:
-	        case 'end':
-	          return _context.stop();
-	      }
-	    }
-	  }, _callee, this);
-	}));
-
-/***/ },
-/* 299 */
-/***/ function(module, exports) {
-
-	
-	/**
-	 * slice() reference.
-	 */
-
-	var slice = Array.prototype.slice;
-
-	/**
-	 * Expose `co`.
-	 */
-
-	module.exports = co['default'] = co.co = co;
-
-	/**
-	 * Wrap the given generator `fn` into a
-	 * function that returns a promise.
-	 * This is a separate function so that
-	 * every `co()` call doesn't create a new,
-	 * unnecessary closure.
-	 *
-	 * @param {GeneratorFunction} fn
-	 * @return {Function}
-	 * @api public
-	 */
-
-	co.wrap = function (fn) {
-	  createPromise.__generatorFunction__ = fn;
-	  return createPromise;
-	  function createPromise() {
-	    return co.call(this, fn.apply(this, arguments));
-	  }
-	};
-
-	/**
-	 * Execute the generator function or a generator
-	 * and return a promise.
-	 *
-	 * @param {Function} fn
-	 * @return {Promise}
-	 * @api public
-	 */
-
-	function co(gen) {
-	  var ctx = this;
-	  var args = slice.call(arguments, 1)
-
-	  // we wrap everything in a promise to avoid promise chaining,
-	  // which leads to memory leak errors.
-	  // see https://github.com/tj/co/issues/180
-	  return new Promise(function(resolve, reject) {
-	    if (typeof gen === 'function') gen = gen.apply(ctx, args);
-	    if (!gen || typeof gen.next !== 'function') return resolve(gen);
-
-	    onFulfilled();
-
-	    /**
-	     * @param {Mixed} res
-	     * @return {Promise}
-	     * @api private
-	     */
-
-	    function onFulfilled(res) {
-	      var ret;
-	      try {
-	        ret = gen.next(res);
-	      } catch (e) {
-	        return reject(e);
-	      }
-	      next(ret);
-	    }
-
-	    /**
-	     * @param {Error} err
-	     * @return {Promise}
-	     * @api private
-	     */
-
-	    function onRejected(err) {
-	      var ret;
-	      try {
-	        ret = gen.throw(err);
-	      } catch (e) {
-	        return reject(e);
-	      }
-	      next(ret);
-	    }
-
-	    /**
-	     * Get the next value in the generator,
-	     * return a promise.
-	     *
-	     * @param {Object} ret
-	     * @return {Promise}
-	     * @api private
-	     */
-
-	    function next(ret) {
-	      if (ret.done) return resolve(ret.value);
-	      var value = toPromise.call(ctx, ret.value);
-	      if (value && isPromise(value)) return value.then(onFulfilled, onRejected);
-	      return onRejected(new TypeError('You may only yield a function, promise, generator, array, or object, '
-	        + 'but the following object was passed: "' + String(ret.value) + '"'));
-	    }
-	  });
-	}
-
-	/**
-	 * Convert a `yield`ed value into a promise.
-	 *
-	 * @param {Mixed} obj
-	 * @return {Promise}
-	 * @api private
-	 */
-
-	function toPromise(obj) {
-	  if (!obj) return obj;
-	  if (isPromise(obj)) return obj;
-	  if (isGeneratorFunction(obj) || isGenerator(obj)) return co.call(this, obj);
-	  if ('function' == typeof obj) return thunkToPromise.call(this, obj);
-	  if (Array.isArray(obj)) return arrayToPromise.call(this, obj);
-	  if (isObject(obj)) return objectToPromise.call(this, obj);
-	  return obj;
-	}
-
-	/**
-	 * Convert a thunk to a promise.
-	 *
-	 * @param {Function}
-	 * @return {Promise}
-	 * @api private
-	 */
-
-	function thunkToPromise(fn) {
-	  var ctx = this;
-	  return new Promise(function (resolve, reject) {
-	    fn.call(ctx, function (err, res) {
-	      if (err) return reject(err);
-	      if (arguments.length > 2) res = slice.call(arguments, 1);
-	      resolve(res);
-	    });
-	  });
-	}
-
-	/**
-	 * Convert an array of "yieldables" to a promise.
-	 * Uses `Promise.all()` internally.
-	 *
-	 * @param {Array} obj
-	 * @return {Promise}
-	 * @api private
-	 */
-
-	function arrayToPromise(obj) {
-	  return Promise.all(obj.map(toPromise, this));
-	}
-
-	/**
-	 * Convert an object of "yieldables" to a promise.
-	 * Uses `Promise.all()` internally.
-	 *
-	 * @param {Object} obj
-	 * @return {Promise}
-	 * @api private
-	 */
-
-	function objectToPromise(obj){
-	  var results = new obj.constructor();
-	  var keys = Object.keys(obj);
-	  var promises = [];
-	  for (var i = 0; i < keys.length; i++) {
-	    var key = keys[i];
-	    var promise = toPromise.call(this, obj[key]);
-	    if (promise && isPromise(promise)) defer(promise, key);
-	    else results[key] = obj[key];
-	  }
-	  return Promise.all(promises).then(function () {
-	    return results;
-	  });
-
-	  function defer(promise, key) {
-	    // predefine the key in the result
-	    results[key] = undefined;
-	    promises.push(promise.then(function (res) {
-	      results[key] = res;
-	    }));
-	  }
-	}
-
-	/**
-	 * Check if `obj` is a promise.
-	 *
-	 * @param {Object} obj
-	 * @return {Boolean}
-	 * @api private
-	 */
-
-	function isPromise(obj) {
-	  return 'function' == typeof obj.then;
-	}
-
-	/**
-	 * Check if `obj` is a generator.
-	 *
-	 * @param {Mixed} obj
-	 * @return {Boolean}
-	 * @api private
-	 */
-
-	function isGenerator(obj) {
-	  return 'function' == typeof obj.next && 'function' == typeof obj.throw;
-	}
-
-	/**
-	 * Check if `obj` is a generator function.
-	 *
-	 * @param {Mixed} obj
-	 * @return {Boolean}
-	 * @api private
-	 */
-	function isGeneratorFunction(obj) {
-	  var constructor = obj.constructor;
-	  if (!constructor) return false;
-	  if ('GeneratorFunction' === constructor.name || 'GeneratorFunction' === constructor.displayName) return true;
-	  return isGenerator(constructor.prototype);
-	}
-
-	/**
-	 * Check for plain object.
-	 *
-	 * @param {Mixed} val
-	 * @return {Boolean}
-	 * @api private
-	 */
-
-	function isObject(val) {
-	  return Object == val.constructor;
-	}
-
-
-/***/ },
+/* 298 */,
+/* 299 */,
 /* 300 */
 /***/ function(module, exports) {
 
@@ -8485,1136 +8197,22 @@
 	document.body.appendChild(canvas);
 
 /***/ },
-/* 301 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = readImage;
-	/**
-	 * Created by fed on 2016/11/8.
-	 */
-	var Promise = __webpack_require__(302);
-	var req = __webpack_require__(312);
-
-	function readImage(name) {
-	  return new Promise(function (resolve) {
-	    var img = new Image();
-	    img.onload = function () {
-	      resolve(img);
-	    };
-	    img.src = req(name);
-	  });
-	}
-
-/***/ },
-/* 302 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = __webpack_require__(303)
-
-
-/***/ },
-/* 303 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = __webpack_require__(304);
-	__webpack_require__(306);
-	__webpack_require__(307);
-	__webpack_require__(308);
-	__webpack_require__(309);
-	__webpack_require__(311);
-
-
-/***/ },
-/* 304 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var asap = __webpack_require__(305);
-
-	function noop() {}
-
-	// States:
-	//
-	// 0 - pending
-	// 1 - fulfilled with _value
-	// 2 - rejected with _value
-	// 3 - adopted the state of another promise, _value
-	//
-	// once the state is no longer pending (0) it is immutable
-
-	// All `_` prefixed properties will be reduced to `_{random number}`
-	// at build time to obfuscate them and discourage their use.
-	// We don't use symbols or Object.defineProperty to fully hide them
-	// because the performance isn't good enough.
-
-
-	// to avoid using try/catch inside critical functions, we
-	// extract them to here.
-	var LAST_ERROR = null;
-	var IS_ERROR = {};
-	function getThen(obj) {
-	  try {
-	    return obj.then;
-	  } catch (ex) {
-	    LAST_ERROR = ex;
-	    return IS_ERROR;
-	  }
-	}
-
-	function tryCallOne(fn, a) {
-	  try {
-	    return fn(a);
-	  } catch (ex) {
-	    LAST_ERROR = ex;
-	    return IS_ERROR;
-	  }
-	}
-	function tryCallTwo(fn, a, b) {
-	  try {
-	    fn(a, b);
-	  } catch (ex) {
-	    LAST_ERROR = ex;
-	    return IS_ERROR;
-	  }
-	}
-
-	module.exports = Promise;
-
-	function Promise(fn) {
-	  if (typeof this !== 'object') {
-	    throw new TypeError('Promises must be constructed via new');
-	  }
-	  if (typeof fn !== 'function') {
-	    throw new TypeError('not a function');
-	  }
-	  this._45 = 0;
-	  this._81 = 0;
-	  this._65 = null;
-	  this._54 = null;
-	  if (fn === noop) return;
-	  doResolve(fn, this);
-	}
-	Promise._10 = null;
-	Promise._97 = null;
-	Promise._61 = noop;
-
-	Promise.prototype.then = function(onFulfilled, onRejected) {
-	  if (this.constructor !== Promise) {
-	    return safeThen(this, onFulfilled, onRejected);
-	  }
-	  var res = new Promise(noop);
-	  handle(this, new Handler(onFulfilled, onRejected, res));
-	  return res;
-	};
-
-	function safeThen(self, onFulfilled, onRejected) {
-	  return new self.constructor(function (resolve, reject) {
-	    var res = new Promise(noop);
-	    res.then(resolve, reject);
-	    handle(self, new Handler(onFulfilled, onRejected, res));
-	  });
-	};
-	function handle(self, deferred) {
-	  while (self._81 === 3) {
-	    self = self._65;
-	  }
-	  if (Promise._10) {
-	    Promise._10(self);
-	  }
-	  if (self._81 === 0) {
-	    if (self._45 === 0) {
-	      self._45 = 1;
-	      self._54 = deferred;
-	      return;
-	    }
-	    if (self._45 === 1) {
-	      self._45 = 2;
-	      self._54 = [self._54, deferred];
-	      return;
-	    }
-	    self._54.push(deferred);
-	    return;
-	  }
-	  handleResolved(self, deferred);
-	}
-
-	function handleResolved(self, deferred) {
-	  asap(function() {
-	    var cb = self._81 === 1 ? deferred.onFulfilled : deferred.onRejected;
-	    if (cb === null) {
-	      if (self._81 === 1) {
-	        resolve(deferred.promise, self._65);
-	      } else {
-	        reject(deferred.promise, self._65);
-	      }
-	      return;
-	    }
-	    var ret = tryCallOne(cb, self._65);
-	    if (ret === IS_ERROR) {
-	      reject(deferred.promise, LAST_ERROR);
-	    } else {
-	      resolve(deferred.promise, ret);
-	    }
-	  });
-	}
-	function resolve(self, newValue) {
-	  // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
-	  if (newValue === self) {
-	    return reject(
-	      self,
-	      new TypeError('A promise cannot be resolved with itself.')
-	    );
-	  }
-	  if (
-	    newValue &&
-	    (typeof newValue === 'object' || typeof newValue === 'function')
-	  ) {
-	    var then = getThen(newValue);
-	    if (then === IS_ERROR) {
-	      return reject(self, LAST_ERROR);
-	    }
-	    if (
-	      then === self.then &&
-	      newValue instanceof Promise
-	    ) {
-	      self._81 = 3;
-	      self._65 = newValue;
-	      finale(self);
-	      return;
-	    } else if (typeof then === 'function') {
-	      doResolve(then.bind(newValue), self);
-	      return;
-	    }
-	  }
-	  self._81 = 1;
-	  self._65 = newValue;
-	  finale(self);
-	}
-
-	function reject(self, newValue) {
-	  self._81 = 2;
-	  self._65 = newValue;
-	  if (Promise._97) {
-	    Promise._97(self, newValue);
-	  }
-	  finale(self);
-	}
-	function finale(self) {
-	  if (self._45 === 1) {
-	    handle(self, self._54);
-	    self._54 = null;
-	  }
-	  if (self._45 === 2) {
-	    for (var i = 0; i < self._54.length; i++) {
-	      handle(self, self._54[i]);
-	    }
-	    self._54 = null;
-	  }
-	}
-
-	function Handler(onFulfilled, onRejected, promise){
-	  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
-	  this.onRejected = typeof onRejected === 'function' ? onRejected : null;
-	  this.promise = promise;
-	}
-
-	/**
-	 * Take a potentially misbehaving resolver function and make sure
-	 * onFulfilled and onRejected are only called once.
-	 *
-	 * Makes no guarantees about asynchrony.
-	 */
-	function doResolve(fn, promise) {
-	  var done = false;
-	  var res = tryCallTwo(fn, function (value) {
-	    if (done) return;
-	    done = true;
-	    resolve(promise, value);
-	  }, function (reason) {
-	    if (done) return;
-	    done = true;
-	    reject(promise, reason);
-	  })
-	  if (!done && res === IS_ERROR) {
-	    done = true;
-	    reject(promise, LAST_ERROR);
-	  }
-	}
-
-
-/***/ },
-/* 305 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
-
-	// Use the fastest means possible to execute a task in its own turn, with
-	// priority over other events including IO, animation, reflow, and redraw
-	// events in browsers.
-	//
-	// An exception thrown by a task will permanently interrupt the processing of
-	// subsequent tasks. The higher level `asap` function ensures that if an
-	// exception is thrown by a task, that the task queue will continue flushing as
-	// soon as possible, but if you use `rawAsap` directly, you are responsible to
-	// either ensure that no exceptions are thrown from your task, or to manually
-	// call `rawAsap.requestFlush` if an exception is thrown.
-	module.exports = rawAsap;
-	function rawAsap(task) {
-	    if (!queue.length) {
-	        requestFlush();
-	        flushing = true;
-	    }
-	    // Equivalent to push, but avoids a function call.
-	    queue[queue.length] = task;
-	}
-
-	var queue = [];
-	// Once a flush has been requested, no further calls to `requestFlush` are
-	// necessary until the next `flush` completes.
-	var flushing = false;
-	// `requestFlush` is an implementation-specific method that attempts to kick
-	// off a `flush` event as quickly as possible. `flush` will attempt to exhaust
-	// the event queue before yielding to the browser's own event loop.
-	var requestFlush;
-	// The position of the next task to execute in the task queue. This is
-	// preserved between calls to `flush` so that it can be resumed if
-	// a task throws an exception.
-	var index = 0;
-	// If a task schedules additional tasks recursively, the task queue can grow
-	// unbounded. To prevent memory exhaustion, the task queue will periodically
-	// truncate already-completed tasks.
-	var capacity = 1024;
-
-	// The flush function processes all tasks that have been scheduled with
-	// `rawAsap` unless and until one of those tasks throws an exception.
-	// If a task throws an exception, `flush` ensures that its state will remain
-	// consistent and will resume where it left off when called again.
-	// However, `flush` does not make any arrangements to be called again if an
-	// exception is thrown.
-	function flush() {
-	    while (index < queue.length) {
-	        var currentIndex = index;
-	        // Advance the index before calling the task. This ensures that we will
-	        // begin flushing on the next task the task throws an error.
-	        index = index + 1;
-	        queue[currentIndex].call();
-	        // Prevent leaking memory for long chains of recursive calls to `asap`.
-	        // If we call `asap` within tasks scheduled by `asap`, the queue will
-	        // grow, but to avoid an O(n) walk for every task we execute, we don't
-	        // shift tasks off the queue after they have been executed.
-	        // Instead, we periodically shift 1024 tasks off the queue.
-	        if (index > capacity) {
-	            // Manually shift all values starting at the index back to the
-	            // beginning of the queue.
-	            for (var scan = 0, newLength = queue.length - index; scan < newLength; scan++) {
-	                queue[scan] = queue[scan + index];
-	            }
-	            queue.length -= index;
-	            index = 0;
-	        }
-	    }
-	    queue.length = 0;
-	    index = 0;
-	    flushing = false;
-	}
-
-	// `requestFlush` is implemented using a strategy based on data collected from
-	// every available SauceLabs Selenium web driver worker at time of writing.
-	// https://docs.google.com/spreadsheets/d/1mG-5UYGup5qxGdEMWkhP6BWCz053NUb2E1QoUTU16uA/edit#gid=783724593
-
-	// Safari 6 and 6.1 for desktop, iPad, and iPhone are the only browsers that
-	// have WebKitMutationObserver but not un-prefixed MutationObserver.
-	// Must use `global` or `self` instead of `window` to work in both frames and web
-	// workers. `global` is a provision of Browserify, Mr, Mrs, or Mop.
-
-	/* globals self */
-	var scope = typeof global !== "undefined" ? global : self;
-	var BrowserMutationObserver = scope.MutationObserver || scope.WebKitMutationObserver;
-
-	// MutationObservers are desirable because they have high priority and work
-	// reliably everywhere they are implemented.
-	// They are implemented in all modern browsers.
-	//
-	// - Android 4-4.3
-	// - Chrome 26-34
-	// - Firefox 14-29
-	// - Internet Explorer 11
-	// - iPad Safari 6-7.1
-	// - iPhone Safari 7-7.1
-	// - Safari 6-7
-	if (typeof BrowserMutationObserver === "function") {
-	    requestFlush = makeRequestCallFromMutationObserver(flush);
-
-	// MessageChannels are desirable because they give direct access to the HTML
-	// task queue, are implemented in Internet Explorer 10, Safari 5.0-1, and Opera
-	// 11-12, and in web workers in many engines.
-	// Although message channels yield to any queued rendering and IO tasks, they
-	// would be better than imposing the 4ms delay of timers.
-	// However, they do not work reliably in Internet Explorer or Safari.
-
-	// Internet Explorer 10 is the only browser that has setImmediate but does
-	// not have MutationObservers.
-	// Although setImmediate yields to the browser's renderer, it would be
-	// preferrable to falling back to setTimeout since it does not have
-	// the minimum 4ms penalty.
-	// Unfortunately there appears to be a bug in Internet Explorer 10 Mobile (and
-	// Desktop to a lesser extent) that renders both setImmediate and
-	// MessageChannel useless for the purposes of ASAP.
-	// https://github.com/kriskowal/q/issues/396
-
-	// Timers are implemented universally.
-	// We fall back to timers in workers in most engines, and in foreground
-	// contexts in the following browsers.
-	// However, note that even this simple case requires nuances to operate in a
-	// broad spectrum of browsers.
-	//
-	// - Firefox 3-13
-	// - Internet Explorer 6-9
-	// - iPad Safari 4.3
-	// - Lynx 2.8.7
-	} else {
-	    requestFlush = makeRequestCallFromTimer(flush);
-	}
-
-	// `requestFlush` requests that the high priority event queue be flushed as
-	// soon as possible.
-	// This is useful to prevent an error thrown in a task from stalling the event
-	// queue if the exception handled by Node.js’s
-	// `process.on("uncaughtException")` or by a domain.
-	rawAsap.requestFlush = requestFlush;
-
-	// To request a high priority event, we induce a mutation observer by toggling
-	// the text of a text node between "1" and "-1".
-	function makeRequestCallFromMutationObserver(callback) {
-	    var toggle = 1;
-	    var observer = new BrowserMutationObserver(callback);
-	    var node = document.createTextNode("");
-	    observer.observe(node, {characterData: true});
-	    return function requestCall() {
-	        toggle = -toggle;
-	        node.data = toggle;
-	    };
-	}
-
-	// The message channel technique was discovered by Malte Ubl and was the
-	// original foundation for this library.
-	// http://www.nonblocking.io/2011/06/windownexttick.html
-
-	// Safari 6.0.5 (at least) intermittently fails to create message ports on a
-	// page's first load. Thankfully, this version of Safari supports
-	// MutationObservers, so we don't need to fall back in that case.
-
-	// function makeRequestCallFromMessageChannel(callback) {
-	//     var channel = new MessageChannel();
-	//     channel.port1.onmessage = callback;
-	//     return function requestCall() {
-	//         channel.port2.postMessage(0);
-	//     };
-	// }
-
-	// For reasons explained above, we are also unable to use `setImmediate`
-	// under any circumstances.
-	// Even if we were, there is another bug in Internet Explorer 10.
-	// It is not sufficient to assign `setImmediate` to `requestFlush` because
-	// `setImmediate` must be called *by name* and therefore must be wrapped in a
-	// closure.
-	// Never forget.
-
-	// function makeRequestCallFromSetImmediate(callback) {
-	//     return function requestCall() {
-	//         setImmediate(callback);
-	//     };
-	// }
-
-	// Safari 6.0 has a problem where timers will get lost while the user is
-	// scrolling. This problem does not impact ASAP because Safari 6.0 supports
-	// mutation observers, so that implementation is used instead.
-	// However, if we ever elect to use timers in Safari, the prevalent work-around
-	// is to add a scroll event listener that calls for a flush.
-
-	// `setTimeout` does not call the passed callback if the delay is less than
-	// approximately 7 in web workers in Firefox 8 through 18, and sometimes not
-	// even then.
-
-	function makeRequestCallFromTimer(callback) {
-	    return function requestCall() {
-	        // We dispatch a timeout with a specified delay of 0 for engines that
-	        // can reliably accommodate that request. This will usually be snapped
-	        // to a 4 milisecond delay, but once we're flushing, there's no delay
-	        // between events.
-	        var timeoutHandle = setTimeout(handleTimer, 0);
-	        // However, since this timer gets frequently dropped in Firefox
-	        // workers, we enlist an interval handle that will try to fire
-	        // an event 20 times per second until it succeeds.
-	        var intervalHandle = setInterval(handleTimer, 50);
-
-	        function handleTimer() {
-	            // Whichever timer succeeds will cancel both timers and
-	            // execute the callback.
-	            clearTimeout(timeoutHandle);
-	            clearInterval(intervalHandle);
-	            callback();
-	        }
-	    };
-	}
-
-	// This is for `asap.js` only.
-	// Its name will be periodically randomized to break any code that depends on
-	// its existence.
-	rawAsap.makeRequestCallFromTimer = makeRequestCallFromTimer;
-
-	// ASAP was originally a nextTick shim included in Q. This was factored out
-	// into this ASAP package. It was later adapted to RSVP which made further
-	// amendments. These decisions, particularly to marginalize MessageChannel and
-	// to capture the MutationObserver implementation in a closure, were integrated
-	// back into ASAP proper.
-	// https://github.com/tildeio/rsvp.js/blob/cddf7232546a9cf858524b75cde6f9edf72620a7/lib/rsvp/asap.js
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 306 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var Promise = __webpack_require__(304);
-
-	module.exports = Promise;
-	Promise.prototype.done = function (onFulfilled, onRejected) {
-	  var self = arguments.length ? this.then.apply(this, arguments) : this;
-	  self.then(null, function (err) {
-	    setTimeout(function () {
-	      throw err;
-	    }, 0);
-	  });
-	};
-
-
-/***/ },
-/* 307 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var Promise = __webpack_require__(304);
-
-	module.exports = Promise;
-	Promise.prototype['finally'] = function (f) {
-	  return this.then(function (value) {
-	    return Promise.resolve(f()).then(function () {
-	      return value;
-	    });
-	  }, function (err) {
-	    return Promise.resolve(f()).then(function () {
-	      throw err;
-	    });
-	  });
-	};
-
-
-/***/ },
-/* 308 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	//This file contains the ES6 extensions to the core Promises/A+ API
-
-	var Promise = __webpack_require__(304);
-
-	module.exports = Promise;
-
-	/* Static Functions */
-
-	var TRUE = valuePromise(true);
-	var FALSE = valuePromise(false);
-	var NULL = valuePromise(null);
-	var UNDEFINED = valuePromise(undefined);
-	var ZERO = valuePromise(0);
-	var EMPTYSTRING = valuePromise('');
-
-	function valuePromise(value) {
-	  var p = new Promise(Promise._61);
-	  p._81 = 1;
-	  p._65 = value;
-	  return p;
-	}
-	Promise.resolve = function (value) {
-	  if (value instanceof Promise) return value;
-
-	  if (value === null) return NULL;
-	  if (value === undefined) return UNDEFINED;
-	  if (value === true) return TRUE;
-	  if (value === false) return FALSE;
-	  if (value === 0) return ZERO;
-	  if (value === '') return EMPTYSTRING;
-
-	  if (typeof value === 'object' || typeof value === 'function') {
-	    try {
-	      var then = value.then;
-	      if (typeof then === 'function') {
-	        return new Promise(then.bind(value));
-	      }
-	    } catch (ex) {
-	      return new Promise(function (resolve, reject) {
-	        reject(ex);
-	      });
-	    }
-	  }
-	  return valuePromise(value);
-	};
-
-	Promise.all = function (arr) {
-	  var args = Array.prototype.slice.call(arr);
-
-	  return new Promise(function (resolve, reject) {
-	    if (args.length === 0) return resolve([]);
-	    var remaining = args.length;
-	    function res(i, val) {
-	      if (val && (typeof val === 'object' || typeof val === 'function')) {
-	        if (val instanceof Promise && val.then === Promise.prototype.then) {
-	          while (val._81 === 3) {
-	            val = val._65;
-	          }
-	          if (val._81 === 1) return res(i, val._65);
-	          if (val._81 === 2) reject(val._65);
-	          val.then(function (val) {
-	            res(i, val);
-	          }, reject);
-	          return;
-	        } else {
-	          var then = val.then;
-	          if (typeof then === 'function') {
-	            var p = new Promise(then.bind(val));
-	            p.then(function (val) {
-	              res(i, val);
-	            }, reject);
-	            return;
-	          }
-	        }
-	      }
-	      args[i] = val;
-	      if (--remaining === 0) {
-	        resolve(args);
-	      }
-	    }
-	    for (var i = 0; i < args.length; i++) {
-	      res(i, args[i]);
-	    }
-	  });
-	};
-
-	Promise.reject = function (value) {
-	  return new Promise(function (resolve, reject) {
-	    reject(value);
-	  });
-	};
-
-	Promise.race = function (values) {
-	  return new Promise(function (resolve, reject) {
-	    values.forEach(function(value){
-	      Promise.resolve(value).then(resolve, reject);
-	    });
-	  });
-	};
-
-	/* Prototype Methods */
-
-	Promise.prototype['catch'] = function (onRejected) {
-	  return this.then(null, onRejected);
-	};
-
-
-/***/ },
-/* 309 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	// This file contains then/promise specific extensions that are only useful
-	// for node.js interop
-
-	var Promise = __webpack_require__(304);
-	var asap = __webpack_require__(310);
-
-	module.exports = Promise;
-
-	/* Static Functions */
-
-	Promise.denodeify = function (fn, argumentCount) {
-	  if (
-	    typeof argumentCount === 'number' && argumentCount !== Infinity
-	  ) {
-	    return denodeifyWithCount(fn, argumentCount);
-	  } else {
-	    return denodeifyWithoutCount(fn);
-	  }
-	}
-
-	var callbackFn = (
-	  'function (err, res) {' +
-	  'if (err) { rj(err); } else { rs(res); }' +
-	  '}'
-	);
-	function denodeifyWithCount(fn, argumentCount) {
-	  var args = [];
-	  for (var i = 0; i < argumentCount; i++) {
-	    args.push('a' + i);
-	  }
-	  var body = [
-	    'return function (' + args.join(',') + ') {',
-	    'var self = this;',
-	    'return new Promise(function (rs, rj) {',
-	    'var res = fn.call(',
-	    ['self'].concat(args).concat([callbackFn]).join(','),
-	    ');',
-	    'if (res &&',
-	    '(typeof res === "object" || typeof res === "function") &&',
-	    'typeof res.then === "function"',
-	    ') {rs(res);}',
-	    '});',
-	    '};'
-	  ].join('');
-	  return Function(['Promise', 'fn'], body)(Promise, fn);
-	}
-	function denodeifyWithoutCount(fn) {
-	  var fnLength = Math.max(fn.length - 1, 3);
-	  var args = [];
-	  for (var i = 0; i < fnLength; i++) {
-	    args.push('a' + i);
-	  }
-	  var body = [
-	    'return function (' + args.join(',') + ') {',
-	    'var self = this;',
-	    'var args;',
-	    'var argLength = arguments.length;',
-	    'if (arguments.length > ' + fnLength + ') {',
-	    'args = new Array(arguments.length + 1);',
-	    'for (var i = 0; i < arguments.length; i++) {',
-	    'args[i] = arguments[i];',
-	    '}',
-	    '}',
-	    'return new Promise(function (rs, rj) {',
-	    'var cb = ' + callbackFn + ';',
-	    'var res;',
-	    'switch (argLength) {',
-	    args.concat(['extra']).map(function (_, index) {
-	      return (
-	        'case ' + (index) + ':' +
-	        'res = fn.call(' + ['self'].concat(args.slice(0, index)).concat('cb').join(',') + ');' +
-	        'break;'
-	      );
-	    }).join(''),
-	    'default:',
-	    'args[argLength] = cb;',
-	    'res = fn.apply(self, args);',
-	    '}',
-	    
-	    'if (res &&',
-	    '(typeof res === "object" || typeof res === "function") &&',
-	    'typeof res.then === "function"',
-	    ') {rs(res);}',
-	    '});',
-	    '};'
-	  ].join('');
-
-	  return Function(
-	    ['Promise', 'fn'],
-	    body
-	  )(Promise, fn);
-	}
-
-	Promise.nodeify = function (fn) {
-	  return function () {
-	    var args = Array.prototype.slice.call(arguments);
-	    var callback =
-	      typeof args[args.length - 1] === 'function' ? args.pop() : null;
-	    var ctx = this;
-	    try {
-	      return fn.apply(this, arguments).nodeify(callback, ctx);
-	    } catch (ex) {
-	      if (callback === null || typeof callback == 'undefined') {
-	        return new Promise(function (resolve, reject) {
-	          reject(ex);
-	        });
-	      } else {
-	        asap(function () {
-	          callback.call(ctx, ex);
-	        })
-	      }
-	    }
-	  }
-	}
-
-	Promise.prototype.nodeify = function (callback, ctx) {
-	  if (typeof callback != 'function') return this;
-
-	  this.then(function (value) {
-	    asap(function () {
-	      callback.call(ctx, null, value);
-	    });
-	  }, function (err) {
-	    asap(function () {
-	      callback.call(ctx, err);
-	    });
-	  });
-	}
-
-
-/***/ },
-/* 310 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	// rawAsap provides everything we need except exception management.
-	var rawAsap = __webpack_require__(305);
-	// RawTasks are recycled to reduce GC churn.
-	var freeTasks = [];
-	// We queue errors to ensure they are thrown in right order (FIFO).
-	// Array-as-queue is good enough here, since we are just dealing with exceptions.
-	var pendingErrors = [];
-	var requestErrorThrow = rawAsap.makeRequestCallFromTimer(throwFirstError);
-
-	function throwFirstError() {
-	    if (pendingErrors.length) {
-	        throw pendingErrors.shift();
-	    }
-	}
-
-	/**
-	 * Calls a task as soon as possible after returning, in its own event, with priority
-	 * over other events like animation, reflow, and repaint. An error thrown from an
-	 * event will not interrupt, nor even substantially slow down the processing of
-	 * other events, but will be rather postponed to a lower priority event.
-	 * @param {{call}} task A callable object, typically a function that takes no
-	 * arguments.
-	 */
-	module.exports = asap;
-	function asap(task) {
-	    var rawTask;
-	    if (freeTasks.length) {
-	        rawTask = freeTasks.pop();
-	    } else {
-	        rawTask = new RawTask();
-	    }
-	    rawTask.task = task;
-	    rawAsap(rawTask);
-	}
-
-	// We wrap tasks with recyclable task objects.  A task object implements
-	// `call`, just like a function.
-	function RawTask() {
-	    this.task = null;
-	}
-
-	// The sole purpose of wrapping the task is to catch the exception and recycle
-	// the task object after its single use.
-	RawTask.prototype.call = function () {
-	    try {
-	        this.task.call();
-	    } catch (error) {
-	        if (asap.onerror) {
-	            // This hook exists purely for testing purposes.
-	            // Its name will be periodically randomized to break any code that
-	            // depends on its existence.
-	            asap.onerror(error);
-	        } else {
-	            // In a web browser, exceptions are not fatal. However, to avoid
-	            // slowing down the queue of pending tasks, we rethrow the error in a
-	            // lower priority turn.
-	            pendingErrors.push(error);
-	            requestErrorThrow();
-	        }
-	    } finally {
-	        this.task = null;
-	        freeTasks[freeTasks.length] = this;
-	    }
-	};
-
-
-/***/ },
-/* 311 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var Promise = __webpack_require__(304);
-
-	module.exports = Promise;
-	Promise.enableSynchronous = function () {
-	  Promise.prototype.isPending = function() {
-	    return this.getState() == 0;
-	  };
-
-	  Promise.prototype.isFulfilled = function() {
-	    return this.getState() == 1;
-	  };
-
-	  Promise.prototype.isRejected = function() {
-	    return this.getState() == 2;
-	  };
-
-	  Promise.prototype.getValue = function () {
-	    if (this._81 === 3) {
-	      return this._65.getValue();
-	    }
-
-	    if (!this.isFulfilled()) {
-	      throw new Error('Cannot get a value of an unfulfilled promise.');
-	    }
-
-	    return this._65;
-	  };
-
-	  Promise.prototype.getReason = function () {
-	    if (this._81 === 3) {
-	      return this._65.getReason();
-	    }
-
-	    if (!this.isRejected()) {
-	      throw new Error('Cannot get a rejection reason of a non-rejected promise.');
-	    }
-
-	    return this._65;
-	  };
-
-	  Promise.prototype.getState = function () {
-	    if (this._81 === 3) {
-	      return this._65.getState();
-	    }
-	    if (this._81 === -1 || this._81 === -2) {
-	      return 0;
-	    }
-
-	    return this._81;
-	  };
-	};
-
-	Promise.disableSynchronous = function() {
-	  Promise.prototype.isPending = undefined;
-	  Promise.prototype.isFulfilled = undefined;
-	  Promise.prototype.isRejected = undefined;
-	  Promise.prototype.getValue = undefined;
-	  Promise.prototype.getReason = undefined;
-	  Promise.prototype.getState = undefined;
-	};
-
-
-/***/ },
-/* 312 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var map = {
-		"./77.jpg": 313,
-		"./77.png": 314,
-		"./jiongxiong.jpeg": 315
-	};
-	function webpackContext(req) {
-		return __webpack_require__(webpackContextResolve(req));
-	};
-	function webpackContextResolve(req) {
-		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
-	};
-	webpackContext.keys = function webpackContextKeys() {
-		return Object.keys(map);
-	};
-	webpackContext.resolve = webpackContextResolve;
-	module.exports = webpackContext;
-	webpackContext.id = 312;
-
-
-/***/ },
-/* 313 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "26PVUdK.jpg";
-
-/***/ },
-/* 314 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "aNyKF8r.png";
-
-/***/ },
-/* 315 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "R2vdO0Q.jpeg";
-
-/***/ },
-/* 316 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	exports.default = function (canvas, ctx, img) {
-	  var imgWidth = parseInt(img.width / 4, 10);
-	  var imgHeight = parseInt(img.height / 4, 10);
-	  var canvasWidth = canvas.width;
-	  var canvasHeight = canvas.height;
-	  var startX = parseInt((canvasWidth - imgWidth) / 2, 10);
-	  var startY = parseInt(canvasHeight - imgHeight, 10);
-	  ctx.fillStyle = bgColor;
-	  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-	  ctx.drawImage(img, startX, startY, imgWidth, imgHeight);
-	  var imgInfo = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-	  var newState = [];
-	  for (var i = 0; i < imgHeight; i++) {
-	    var _loop = function _loop(j) {
-	      var N = (i + startY) * canvasWidth + j + startX;
-	      var color = [0, 1, 2].map(function (index) {
-	        return imgInfo.data[4 * N + index];
-	      });
-	      var sum = color.reduce(function (sumed, x) {
-	        return sumed + x;
-	      }, 0);
-	      if (sum < 665) {
-	        newState.push({
-	          x: j + startX + (0.5 - (0, _math.random)()) * RANDOM_FACTOR * 0,
-	          y: i + startY + (0.5 - (0, _math.random)()) * RANDOM_FACTOR * 0,
-	          fillStyle: 'rgba(' + color.join(',') + ', 0.99)'
-	        });
-	      }
-	    };
-
-	    for (var j = 0; j < imgWidth; j++) {
-	      _loop(j);
-	    }
-	  }
-	  var revCount = 0;
-	  var pauseCount = 0;
-	  var initLength = newState.length;
-	  function nextRandomParticle() {
-	    var l = newState.length;
-	    if (l <= 0) return null;
-	    var index = parseInt((0, _math.random)() * l, 10);
-	    var _newState$splice$ = newState.splice(index, 1)[0],
-	        x0 = _newState$splice$.x,
-	        y0 = _newState$splice$.y,
-	        fillStyle = _newState$splice$.fillStyle;
-
-	    var liveTime = parseInt((0, _math.random)() * 10, 10) + 200;
-	    var kx = ((0, _math.random)() - 0.5) * 0.1;
-	    var ky = ((0, _math.random)() - 0.5) * 0.1;
-	    var pastTime = 0;
-	    var added = false;
-	    return {
-	      next: function next() {
-	        if (pastTime == liveTime) {
-	          if (!added) {
-	            revCount++;
-	            added = true;
-	          } else {
-	            if (revCount === initLength) {
-	              for (var _i = 0; _i < particles.length; _i++) {
-	                particles[_i].reverse();
-	              }
-	              revCount = 0;
-	              pauseCount = 30;
-	            }
-	          }
-	        } else {
-	          pastTime++;
-	        }
-	        return nextPosition(x0, y0, kx, ky, pastTime, liveTime, fillStyle);
-	      },
-	      reverse: function reverse() {
-	        added = false;
-	        var factor = 1 - (0, _math.square)(0.5 - pastTime / liveTime);
-	        x0 = x0 + (pastTime * kx + pastTime * pastTime * kx) * factor;
-	        y0 = y0 + (pastTime * ky + pastTime * pastTime * ky) * factor;
-	        pastTime = 0;
-	        kx = -kx;
-	        ky = -ky;
-	      }
-	    };
-	  }
-	  var pSize = 100;
-	  var particles = [];
-	  var lastResult = void 0;
-	  function traverse(ctx) {}
-	  var animationFn = function animationFn() {
-	    if (pauseCount) {
-	      pauseCount--;
-	    } else {
-	      if (particles.length && !particles[particles.length - 1]) {
-	        // particles.pop();
-	        // for (let i = 0; i < particles.length; i++) {
-	        //   particles[i].reverse();
-	        // }
-	        pauseCount = 1;
-	        nextRandomParticle = null;
-	      } else {
-	        var moving = [];
-	        if (typeof nextRandomParticle === 'function') {
-	          for (var _i2 = 0; _i2 < pSize; _i2++) {
-	            var func = nextRandomParticle();
-	            if (func) {
-	              particles.push(func);
-	            }
-	          }
-	        }
-	        for (var _i3 = 0; _i3 < particles.length; _i3++) {
-	          var info = particles[_i3].next();
-	          if (info) {
-	            moving.push(info);
-	          }
-	        }
-	        lastResult = [].concat(moving, newState);
-	      }
-	    }
-	    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-	    ctx.fillStyle = bgColor;
-	    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-	    var l = lastResult.length;
-	    for (var _i4 = 0; _i4 < lastResult.length; _i4++) {
-	      var _lastResult$_i = lastResult[_i4],
-	          x = _lastResult$_i.x,
-	          y = _lastResult$_i.y,
-	          fillStyle = _lastResult$_i.fillStyle;
-
-	      ctx.fillStyle = fillStyle;
-	      ctx.fillRect(x, y, 1, 1);
-	    }
-	    requestAnimationFrame(animationFn);
-	  };
-	  requestAnimationFrame(animationFn);
-	};
-
-	var _math = __webpack_require__(317);
-
-	var RANDOM_FACTOR = 5; /**
-	                        * Created by fed on 2016/11/9.
-	                        */
-
-	var bgColor = '#fff';
-
-	function nextPosition(x0, y0, kx, ky, pastTime, liveTime, fillStyle) {
-	  var factor = 1 - (0, _math.square)(0.5 - pastTime / liveTime);
-	  return {
-	    x: x0 + (pastTime * kx + (0, _math.square)(pastTime) * kx) * factor,
-	    y: y0 + (pastTime * ky + (0, _math.square)(pastTime) * ky) * factor,
-	    fillStyle: fillStyle
-	  };
-	}
-
-/***/ },
+/* 301 */,
+/* 302 */,
+/* 303 */,
+/* 304 */,
+/* 305 */,
+/* 306 */,
+/* 307 */,
+/* 308 */,
+/* 309 */,
+/* 310 */,
+/* 311 */,
+/* 312 */,
+/* 313 */,
+/* 314 */,
+/* 315 */,
+/* 316 */,
 /* 317 */
 /***/ function(module, exports) {
 
@@ -9636,6 +8234,374 @@
 	function square(x) {
 	  return x * x;
 	}
+
+/***/ },
+/* 318 */,
+/* 319 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var Easing = {
+	  linear: function linear(t, b, c, d) {
+	    return c * t / d + b;
+	  },
+	  easeInQuad: function easeInQuad(t, b, c, d) {
+	    return c * (t /= d) * t + b;
+	  },
+	  easeOutQuad: function easeOutQuad(t, b, c, d) {
+	    return -c * (t /= d) * (t - 2) + b;
+	  },
+	  easeInOutQuad: function easeInOutQuad(t, b, c, d) {
+	    if ((t /= d / 2) < 1) {
+	      return c / 2 * t * t + b;
+	    } else {
+	      return -c / 2 * (--t * (t - 2) - 1) + b;
+	    }
+	  },
+	  easeInCubic: function easeInCubic(t, b, c, d) {
+	    return c * (t /= d) * t * t + b;
+	  },
+	  easeOutCubic: function easeOutCubic(t, b, c, d) {
+	    return c * ((t = t / d - 1) * t * t + 1) + b;
+	  },
+	  easeInOutCubic: function easeInOutCubic(t, b, c, d) {
+	    if ((t /= d / 2) < 1) {
+	      return c / 2 * t * t * t + b;
+	    } else {
+	      return c / 2 * ((t -= 2) * t * t + 2) + b;
+	    }
+	  },
+	  easeInQuart: function easeInQuart(t, b, c, d) {
+	    return c * (t /= d) * t * t * t + b;
+	  },
+	  easeOutQuart: function easeOutQuart(t, b, c, d) {
+	    return -c * ((t = t / d - 1) * t * t * t - 1) + b;
+	  },
+	  easeInOutQuart: function easeInOutQuart(t, b, c, d) {
+	    if ((t /= d / 2) < 1) {
+	      return c / 2 * t * t * t * t + b;
+	    } else {
+	      return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
+	    }
+	  },
+	  easeInQuint: function easeInQuint(t, b, c, d) {
+	    return c * (t /= d) * t * t * t * t + b;
+	  },
+	  easeOutQuint: function easeOutQuint(t, b, c, d) {
+	    return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
+	  },
+	  easeInOutQuint: function easeInOutQuint(t, b, c, d) {
+	    if ((t /= d / 2) < 1) {
+	      return c / 2 * t * t * t * t * t + b;
+	    } else {
+	      return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
+	    }
+	  },
+	  easeInSine: function easeInSine(t, b, c, d) {
+	    return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
+	  },
+	  easeOutSine: function easeOutSine(t, b, c, d) {
+	    return c * Math.sin(t / d * (Math.PI / 2)) + b;
+	  },
+	  easeInOutSine: function easeInOutSine(t, b, c, d) {
+	    return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
+	  },
+	  easeInExpo: function easeInExpo(t, b, c, d) {
+	    var _ref;
+	    return (_ref = t === 0) !== null ? _ref : {
+	      b: c * Math.pow(2, 10 * (t / d - 1)) + b
+	    };
+	  },
+	  easeOutExpo: function easeOutExpo(t, b, c, d) {
+	    var _ref;
+	    return (_ref = t === d) !== null ? _ref : b + {
+	      c: c * (-Math.pow(2, -10 * t / d) + 1) + b
+	    };
+	  },
+	  easeInOutExpo: function easeInOutExpo(t, b, c, d) {
+	    if (t === 0) {
+	      b;
+	    }
+	    if (t === d) {
+	      b + c;
+	    }
+	    if ((t /= d / 2) < 1) {
+	      return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+	    } else {
+	      return c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
+	    }
+	  },
+	  easeInCirc: function easeInCirc(t, b, c, d) {
+	    return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
+	  },
+	  easeOutCirc: function easeOutCirc(t, b, c, d) {
+	    return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
+	  },
+	  easeInOutCirc: function easeInOutCirc(t, b, c, d) {
+	    if ((t /= d / 2) < 1) {
+	      return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
+	    } else {
+	      return c / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + b;
+	    }
+	  },
+	  easeInElastic: function easeInElastic(t, b, c, d) {
+	    var a, p, s;
+	    s = 1.70158;
+	    p = 0;
+	    a = c;
+	    if (t === 0) {
+	      b;
+	    } else if ((t /= d) === 1) {
+	      b + c;
+	    }
+	    if (!p) {
+	      p = d * 0.3;
+	    }
+	    if (a < Math.abs(c)) {
+	      a = c;
+	      s = p / 4;
+	    } else {
+	      s = p / (2 * Math.PI) * Math.asin(c / a);
+	    }
+	    return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+	  },
+	  easeOutElastic: function easeOutElastic(t, b, c, d) {
+	    var a, p, s;
+	    s = 1.70158;
+	    p = 0;
+	    a = c;
+	    if (t === 0) {
+	      b;
+	    } else if ((t /= d) === 1) {
+	      b + c;
+	    }
+	    if (!p) {
+	      p = d * 0.3;
+	    }
+	    if (a < Math.abs(c)) {
+	      a = c;
+	      s = p / 4;
+	    } else {
+	      s = p / (2 * Math.PI) * Math.asin(c / a);
+	    }
+	    return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b;
+	  },
+	  easeInOutElastic: function easeInOutElastic(t, b, c, d) {
+	    var a, p, s;
+	    s = 1.70158;
+	    p = 0;
+	    a = c;
+	    if (t === 0) {
+	      b;
+	    } else if ((t /= d / 2) === 2) {
+	      b + c;
+	    }
+	    if (!p) {
+	      p = d * (0.3 * 1.5);
+	    }
+	    if (a < Math.abs(c)) {
+	      a = c;
+	      s = p / 4;
+	    } else {
+	      s = p / (2 * Math.PI) * Math.asin(c / a);
+	    }
+	    if (t < 1) {
+	      return -0.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+	    } else {
+	      return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p) * 0.5 + c + b;
+	    }
+	  },
+	  easeInBack: function easeInBack(t, b, c, d, s) {
+	    if (s === void 0) {
+	      s = 1.70158;
+	    }
+	    return c * (t /= d) * t * ((s + 1) * t - s) + b;
+	  },
+	  easeOutBack: function easeOutBack(t, b, c, d, s) {
+	    if (s === void 0) {
+	      s = 1.70158;
+	    }
+	    return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
+	  },
+	  easeInOutBack: function easeInOutBack(t, b, c, d, s) {
+	    if (s === void 0) {
+	      s = 1.70158;
+	    }
+	    if ((t /= d / 2) < 1) {
+	      return c / 2 * (t * t * (((s *= 1.525) + 1) * t - s)) + b;
+	    } else {
+	      return c / 2 * ((t -= 2) * t * (((s *= 1.525) + 1) * t + s) + 2) + b;
+	    }
+	  },
+	  easeInBounce: function easeInBounce(t, b, c, d) {
+	    var v;
+	    v = Easing.easeOutBounce(d - t, 0, c, d);
+	    return c - v + b;
+	  },
+	  easeOutBounce: function easeOutBounce(t, b, c, d) {
+	    if ((t /= d) < 1 / 2.75) {
+	      return c * (7.5625 * t * t) + b;
+	    } else if (t < 2 / 2.75) {
+	      return c * (7.5625 * (t -= 1.5 / 2.75) * t + 0.75) + b;
+	    } else if (t < 2.5 / 2.75) {
+	      return c * (7.5625 * (t -= 2.25 / 2.75) * t + 0.9375) + b;
+	    } else {
+	      return c * (7.5625 * (t -= 2.625 / 2.75) * t + 0.984375) + b;
+	    }
+	  },
+	  easeInOutBounce: function easeInOutBounce(t, b, c, d) {
+	    var v;
+	    if (t < d / 2) {
+	      v = Easing.easeInBounce(t * 2, 0, c, d);
+	      return v * 0.5 + b;
+	    } else {
+	      v = Easing.easeOutBounce(t * 2 - d, 0, c, d);
+	      return v * 0.5 + c * 0.5 + b;
+	    }
+	  }
+	};
+
+	module.exports = Easing;
+
+/***/ },
+/* 320 */,
+/* 321 */,
+/* 322 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _easingJs = __webpack_require__(319);
+
+	var _easingJs2 = _interopRequireDefault(_easingJs);
+
+	var _ctx = __webpack_require__(300);
+
+	var _pointLine = __webpack_require__(323);
+
+	var _pointLine2 = _interopRequireDefault(_pointLine);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	(0, _pointLine2.default)(_ctx.ctx, _ctx.canvas, 'rgba(244, 244, 244, 0.8)', 'rgba(222, 222, 222, 0.2)', _easingJs2.default.easeOutQuad); /**
+	                                                                                                                                          * Created by fed on 2016/11/10.
+	                                                                                                                                          */
+
+/***/ },
+/* 323 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Created by fed on 2016/11/10.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
+
+	exports.default = function (ctx, canvas, fillStyle, strokeStyle, fn) {
+	  var points = new Array(9).fill(0).map(function () {
+	    return new Point(canvas.width, canvas.height, fn);
+	  });
+	  ctx.fillStyle = fillStyle;
+	  ctx.strokeStyle = strokeStyle;
+	  function f() {
+	    ctx.clearRect(0, 0, canvas.width, canvas.height);
+	    points.forEach(function (point) {
+	      return point.draw(canvas, ctx, points);
+	    });
+	    requestAnimationFrame(f);
+	  }
+	  requestAnimationFrame(f);
+	  // setInterval(f, 30;)
+	};
+
+	var _math = __webpack_require__(317);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function outOfRange(width, height, x, y) {
+	  return x < 0 || y < 0 || x > width || y > height;
+	}
+
+	function positionGenerator(width) {
+	  return parseInt(width / 2 + ((0, _math.random)() - 0.5) * width / 1.3, 10);
+	}
+
+	var Point = function () {
+	  function Point(width, height, fn) {
+	    _classCallCheck(this, Point);
+
+	    this.x = positionGenerator(width);
+	    this.y = positionGenerator(height);
+	    this.radius = parseInt((0, _math.random)() * 10) + 2;
+	    this.nextX = 0;
+	    this.nextY = 0;
+	    this.x0 = 0;
+	    this.y0 = 0;
+	    this.duration = 0;
+	    this.pastTime = 0;
+	    this.fn = fn;
+	    this.next(width, height);
+	  }
+
+	  _createClass(Point, [{
+	    key: 'draw',
+	    value: function draw(_ref, ctx, points) {
+	      var width = _ref.width,
+	          height = _ref.height;
+
+	      var _this = this;
+
+	      if (!outOfRange(width, height, this.x, this.y)) {
+	        ctx.beginPath();
+	        ctx.arc(this.x, this.y, this.radius, 0, 2 * _math.PI);
+	        ctx.fill();
+	        ctx.beginPath();
+	        points.forEach(function (point) {
+	          if (outOfRange(width, height, point.x, point.y)) return;
+	          ctx.beginPath();
+	          ctx.moveTo(_this.x, _this.y);
+	          ctx.lineTo(point.x, point.y);
+	          ctx.stroke();
+	          ctx.closePath();
+	        });
+	      }
+	      this.next(width, height);
+	    }
+	  }, {
+	    key: 'next',
+	    value: function next(width, height) {
+	      if (this.pastTime < this.duration) {
+	        this.x = this.fn(this.pastTime, this.x0, this.nextX - this.x0, this.duration);
+	        this.y = this.fn(this.pastTime, this.y0, this.nextY - this.y0, this.duration);
+	        this.pastTime++;
+	      } else {
+	        this.duration = 2500;
+	        this.pastTime = 0;
+	        if (outOfRange(width, height, this.x, this.y)) {
+	          this.x = positionGenerator(width);
+	          this.y = positionGenerator(height);
+	        }
+	        this.x0 = this.x;
+	        this.y0 = this.y;
+	        if ((0, _math.random)() > 0.5) {
+	          this.nextX = (0, _math.random)() > 0.5 ? -1 : width + 1;
+	          this.nextY = this.y + ((0, _math.random)() - 0.5) * 2 * (height - this.y);
+	        } else {
+	          this.nextX = this.x + ((0, _math.random)() - 0.5) * 2 * (width - this.x);
+	          this.nextY = (0, _math.random)() > 0.5 ? -1 : height + 1;
+	        }
+	      }
+	    }
+	  }]);
+
+	  return Point;
+	}();
 
 /***/ }
 /******/ ]);
