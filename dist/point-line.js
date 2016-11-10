@@ -8484,7 +8484,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	(0, _pointLine2.default)(_ctx.ctx, _ctx.canvas, 'rgba(244, 244, 244, 0.8)', 'rgba(222, 222, 222, 0.2)', _easingJs2.default.easeOutQuad); /**
+	(0, _pointLine2.default)(_ctx.ctx, _ctx.canvas, 'rgba(188, 188, 188, 0.8)', 'rgba(188, 188, 188, 0.2)', _easingJs2.default.easeOutQuad); /**
 	                                                                                                                                          * Created by fed on 2016/11/10.
 	                                                                                                                                          */
 
@@ -8504,8 +8504,15 @@
 
 
 	exports.default = function (ctx, canvas, fillStyle, strokeStyle, fn) {
-	  var points = new Array(9).fill(0).map(function () {
-	    return new Point(canvas.width, canvas.height, fn);
+	  var points = new Array(9).fill(0).map(function (_, index) {
+	    return {
+	      x: parseInt(canvas.width / 4 * (index % 3 + 1 + (0.5 - (0, _math.random)())), 10),
+	      y: parseInt(canvas.height / 4 * (parseInt(index / 3, 10) + 1 + (0.5 - (0, _math.random)())), 10)
+	    };
+	  }).map(function (_ref2) {
+	    var x = _ref2.x,
+	        y = _ref2.y;
+	    return new Point(x, y, fn, true);
 	  });
 	  ctx.fillStyle = fillStyle;
 	  ctx.strokeStyle = strokeStyle;
@@ -8533,11 +8540,11 @@
 	}
 
 	var Point = function () {
-	  function Point(width, height, fn) {
+	  function Point(width, height, fn, given) {
 	    _classCallCheck(this, Point);
 
-	    this.x = positionGenerator(width);
-	    this.y = positionGenerator(height);
+	    this.x = given ? width : positionGenerator(width);
+	    this.y = given ? height : positionGenerator(height);
 	    this.radius = parseInt((0, _math.random)() * 10) + 2;
 	    this.nextX = 0;
 	    this.nextY = 0;
@@ -8581,7 +8588,7 @@
 	        this.y = this.fn(this.pastTime, this.y0, this.nextY - this.y0, this.duration);
 	        this.pastTime++;
 	      } else {
-	        this.duration = 2500;
+	        this.duration = 1500;
 	        this.pastTime = 0;
 	        if (outOfRange(width, height, this.x, this.y)) {
 	          this.x = positionGenerator(width);
@@ -8591,11 +8598,12 @@
 	        this.y0 = this.y;
 	        if ((0, _math.random)() > 0.5) {
 	          this.nextX = (0, _math.random)() > 0.5 ? -1 : width + 1;
-	          this.nextY = this.y + ((0, _math.random)() - 0.5) * 2 * (height - this.y);
+	          this.nextY = this.y + ((0, _math.random)() - 0.5) * 2 * (height - this.y) + 50;
 	        } else {
-	          this.nextX = this.x + ((0, _math.random)() - 0.5) * 2 * (width - this.x);
+	          this.nextX = this.x + ((0, _math.random)() - 0.5) * 2 * (width - this.x) + 50;
 	          this.nextY = (0, _math.random)() > 0.5 ? -1 : height + 1;
 	        }
+	        console.log(this);
 	      }
 	    }
 	  }]);

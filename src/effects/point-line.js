@@ -15,9 +15,9 @@ function positionGenerator(width) {
 }
 
 class Point {
-  constructor(width, height, fn) {
-    this.x = positionGenerator(width);
-    this.y = positionGenerator(height);
+  constructor(width, height, fn, given) {
+    this.x = given ? width : positionGenerator(width);
+    this.y = given ? height : positionGenerator(height);
     this.radius = parseInt(random() * 10) + 2;
     this.nextX = 0;
     this.nextY = 0;
@@ -52,7 +52,7 @@ class Point {
       this.pastTime++;
     }
     else {
-      this.duration = 2500;
+      this.duration = 1500;
       this.pastTime = 0;
       if (outOfRange(width, height, this.x, this.y)) {
         this.x = positionGenerator(width);
@@ -62,17 +62,27 @@ class Point {
       this.y0 = this.y;
       if (random() > 0.5) {
         this.nextX = random() > 0.5 ? -1 : width + 1;
-        this.nextY = this.y + (random() - 0.5) * 2 * (height - this.y);
-      } else {
-        this.nextX = this.x + (random() - 0.5) * 2 * (width - this.x);
+        this.nextY = this.y + (random() - 0.5) * 2 * (height - this.y) + 50;
+      }
+      else {
+        this.nextX = this.x + (random() - 0.5) * 2 * (width - this.x) + 50;
         this.nextY = random() > 0.5 ? -1 : height + 1;
       }
+      console.log(this);
     }
   }
 }
 
 export default function (ctx, canvas, fillStyle, strokeStyle, fn) {
-  const points = new Array(9).fill(0).map(() => new Point(canvas.width, canvas.height, fn));
+  const points = new Array(9)
+    .fill(0)
+    .map((_, index) => {
+      return {
+        x: parseInt((canvas.width / 4) * (index % 3 + 1 + (0.5 - random())), 10),
+        y: parseInt((canvas.height / 4) * (parseInt(index / 3, 10) + 1 + (0.5 - random())), 10),
+      };
+    })
+    .map(({x, y}) => new Point(x, y, fn, true));
   ctx.fillStyle = fillStyle;
   ctx.strokeStyle = strokeStyle;
   function f() {
